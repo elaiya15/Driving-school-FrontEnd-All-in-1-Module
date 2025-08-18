@@ -1,0 +1,10 @@
+{
+    "rewrites": [{ "source": "/(.*)", "destination": "/" }],
+    "headers": [
+      {
+        "source": "/sw.js",
+        "headers": [{ "key": "Content-Type", "value": "application/javascript" }]
+      }
+    ]
+  }
+  
