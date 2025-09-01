@@ -2,7 +2,7 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate} from "react-router-dom";
-
+import {setBranchSession,removeBranchSession,getBranchSession} from './../utils/BranchCookie.jsx';
 const RoleContext = createContext();
 
 export const RoleProvider = ({ children }) => {
@@ -15,14 +15,18 @@ export const RoleProvider = ({ children }) => {
   try {
     console.log("run");
     
-    await axios.post(`${import.meta.env.VITE_BACK_URL || ""}/api/admin/logout`, {}, {
+    await axios.post(`${import.meta.env.VITE_BACK_URL || ""}/api/user/logout`, {}, {
       withCredentials: true,
     });
+  
   } catch (err) {
     console.error("Logout failed:", err);
   } finally {
     setUser(null);
     setRole(null);
+   removeBranchSession()
+
+    // removeBranchCookie()
     // window.location.href = "/"; // ← Ensure redirection works across tabs
     navigate("/")
   }
@@ -32,15 +36,19 @@ export const RoleProvider = ({ children }) => {
     const fetchUser = async () => {
       setIsLoading(true);
       try {
-        const res = await axios.get(`${import.meta.env.VITE_BACK_URL || ""}/api/admin/me`, {
+        const res = await axios.get(`${import.meta.env.VITE_BACK_URL || ""}/api/user/me`, {
           withCredentials: true,
         });
         setUser(res.data.user);
         setRole(res.data.user.role.toLowerCase());
+        if(res.data.user.branchId){
+            setBranchSession(res.data.user.branchId);
+        }
       } catch (error) {
-        console.warn("AuthContext: Not logged in or token expired");
+        console.warn("AuthContext: Not logged in or token expired",error);
         setUser(null);
         setRole(null);
+     removeBranchSession()
         navigate("/")
       } finally {
         setIsLoading(false);

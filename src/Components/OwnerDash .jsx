@@ -2,15 +2,11 @@ import { useState } from "react";
 import { Outlet } from "react-router-dom";
 import Navbar from "./Navbar";
 import NewSideBar from "./NewSideBar";
-import { useEffect } from "react";
 
 const AdminDash = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   console.log(sidebarOpen);
   
-// useEffect(() => {
-    
-// });
   return (
     <>
       <Navbar setSidebarOpen={setSidebarOpen} sidebarOpen={sidebarOpen} />

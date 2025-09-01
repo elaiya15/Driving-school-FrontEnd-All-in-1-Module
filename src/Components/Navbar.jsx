@@ -7,26 +7,42 @@ import { initFlowbite } from "flowbite";
 import { extractDriveFileId } from "../Components/ImageProxyRouterFunction/funtion.js";
 import { useRole } from "./AuthContext/AuthContext";
 import { FaChevronDown, FaChevronUp, FaSignOutAlt } from "react-icons/fa";
+import { FaUser } from "react-icons/fa";
+import { removeBranchSession, getBranchSession } from "./utils/BranchCookie.jsx";
+import userSwitch from '../assets/userswitch.png'
 
 function Navbar({ setSidebarOpen,sidebarOpen }) {
   const { role, user, clearAuthState } = useRole();
+  
   const navigate = useNavigate();
 const [img, setImg] = useState(null);
   const [isLogin, setIsLogin] = useState({ Name: null, photo: null,role:role||null });
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [showImagePreview, setShowImagePreview] = useState(false);
+  const [switchOwner, setSwitchOwner] = useState(false);
+  const branchId = getBranchSession()
 
   const dropdownRef = useRef(null);
 
   useEffect(() => {
     initFlowbite();
+
     if (!role) {
       navigate("/");
     } else {
       setIsLogin(user);
     }
+
   }, [role]);
+
+
+//   console.log('role:', role)
+//   console.log(getBranchSession());
+
+
+
+
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -47,7 +63,15 @@ const [img, setImg] = useState(null);
     setShowLogoutModal(false);
     clearAuthState();
   };
+    const SwitchRole=()=>{ 
+//   const branchId = getBranchSession()
+  removeBranchSession()
+  navigate("/owner/dashboard", { replace: true }); // no forward to admin
+console.log(branchId);
+console.log(role);
 
+
+    }
 
 
   return (
@@ -107,7 +131,9 @@ const [img, setImg] = useState(null);
                 className="flex items-center gap-4 text-sm rounded-full focus:outline-none"
                 onClick={() => setDropdownOpen((prev) => !prev)}
               >
-                <img
+               
+               {isLogin.photo ? 
+               <img
                   src={
                     isLogin.photo
                       ? `${URL}/api/image-proxy/${extractDriveFileId(isLogin.photo)}`
@@ -120,7 +146,8 @@ const [img, setImg] = useState(null);
                     e.stopPropagation(); // don’t toggle dropdown
                     setShowImagePreview(true);
                   }}
-                />
+                />: <FaUser    className="object-cover w-10 h-10 py-2 text-blue-600 rounded-full shadow-sm cursor-pointer ring-2 ring-blue-500" />}
+
                 {dropdownOpen ? (
                   <FaChevronUp className="text-gray-600 dark:text-gray-300" />
                 ) : (
@@ -136,13 +163,17 @@ const [img, setImg] = useState(null);
 
               {dropdownOpen && (
                 <div className="absolute top-0 right-0 z-10 w-48 bg-white rounded-md shadow-lg mt-14 dark:bg-gray-700">
-                <div className=" py-2   border-b  border-gray-300">
-                  <div className=" px-4 py-1 text-sm font-medium text-gray-900 truncate dark:text-gray-300 ">
+                <div className="py-2 ">
+                  <div className="px-4 py-1 text-sm font-medium text-gray-900 truncate dark:text-gray-300">
                     {isLogin?.Name}
-                    {/* <div className=" divide-y divide-gray-100 dark:divide-gray-600 block text-sm  text-gray-500 truncate dark:text-gray-400 "> {isLogin?.role}</div> */}
-                  </div >
-                  <div className="px-4  text-sm text-gray-700 dark:text-gray-200"> {isLogin?.role}</div>
-                  </div>
+                    {/* <div className="block text-sm text-gray-500 truncate divide-y divide-gray-100 dark:divide-gray-600 dark:text-gray-400"> {isLogin?.role}</div> */}
+                  </div  >
+                  <div className="gap-2 px-4 text-sm text-gray-700 dark:text-gray-200 "> {isLogin?.role}</div>
+                  </div> 
+                  {branchId&& role==="owner" && 
+                  <div className="flex items-center justify-start gap-2 px-2 py-1 text-sm text-gray-700 border-t border-gray-300 dark:text-gray-200 hover:bg-gray-100 hover:cursor-pointer dark:hover:bg-gray-600 " 
+                  onClick={SwitchRole}
+                  ><img className="w-7 h-7 " src={userSwitch}/> <span className="text-center"> Switch to Owner </span></div>}
                   
 
 
@@ -153,7 +184,7 @@ const [img, setImg] = useState(null);
                       setDropdownOpen(false);
                       setShowLogoutModal(true);
                     }}
-                    className="flex items-center w-full px-4 py-2 text-sm text-left text-red-600 gap-x-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-red-400"
+                    className="flex items-center w-full px-4 py-2 text-sm text-left text-red-600 border-t border-gray-300 gap-x-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-red-400"
                   >
                     <FaSignOutAlt className="text-lg" />
                     Logout

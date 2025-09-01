@@ -4,12 +4,12 @@ import { URL } from "../App";
 import axios from "axios";
 axios.defaults.withCredentials = true;
 import { useRole } from '../Components/AuthContext/AuthContext';
-
+import { setBranchSession } from "../Components/utils/BranchCookie";
 const LoginForm = () => {
-  const { role, setUser, setRole, isLoading } = useRole();
+  const { role, user,setUser, setRole, isLoading } = useRole();
   const navigate = useNavigate();
 
-  const [selectedRole, setSelectedRole] = useState("Learner");
+//   const [selectedRole, setSelectedRole] = useState("Learner");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [passwordVisible, setPasswordVisible] = useState(false);
@@ -20,24 +20,57 @@ const LoginForm = () => {
 
   useEffect(() => {
     setErrors({});
-  }, [selectedRole]);
+  }, []);
 
   useEffect(() => {
     if (!isLoading && role) {
-      if (role === "learner") {
-        navigate("/learner/learnerDash");
-      } else if (role === "admin") {
-        navigate("/admin/dashboard");
-      } else if (role === "instructor") {
-        navigate("/instructor/instructorDash");
+
+          if (user.branchId) {
+        setBranchSession(user.branchId);
+        // localStorage.setItem("branchId", user.branchId);
       }
+console.log('====================================');
+console.log(role);
+console.log('====================================');
+      switch (role) {
+    case "learner":
+      navigate("/learner/LearnerDash");
+      break;
+    case "owner":
+      navigate("/owner/dashboard");
+      break;
+
+    case "admin":
+      navigate("/admin/dashboard");
+      break;
+
+    case "instructor":
+      navigate("/instructor/instructorDash");
+      break;
+
+    default:
+      setErrors((prev) => ({
+        ...prev,
+        login: "Invalid role detected.",
+      }));
+  }
+
+    //   if (role === "learner") {
+    //     navigate("/learner/learnerDash");
+    //   } else if (role === "admin") {
+    //     navigate("/admin/dashboard");
+    //   }  else if (role === "instructor") {
+    //     navigate("/instructor/instructorDash");
+    //   }
     }
   }, [isLoading,  navigate]);
 
-  const handleRoleSelect = (role) => {
-    setSelectedRole(role);
-    setErrors((prev) => ({ ...prev, role: "" }));
-  };
+//   const handleRoleSelect = (role) => {
+//     setSelectedRole(role);
+//     // setErrors({});
+
+//     setErrors((prev) => ({ ...prev, role: "" }));
+//   };
 
   const validateFields = () => {
     let errors = {};
@@ -50,14 +83,22 @@ const LoginForm = () => {
   const handleLogin = async (event) => {
     event.preventDefault();
     if (!validateFields()) return;
-    const data = { username, password, role: selectedRole };
+    const data = { username, password};
     setIsLoad(true);
     try {
-      const response = await axios.post(`${URL}/api/admin/login`, data);
+      const response = await axios.post(`${URL}/api/user/login`, data);
       const { user } = response.data;
       const Role = user.role?.toLowerCase();
       setUser(user);
       setRole(Role);
+      console.log("user info from login:", user);
+      if (user.branchId) {
+        console.log('user.branchId:', user.branchId);
+        
+        setBranchSession(user.branchId);
+        // localStorage.setItem("branchId", user.branchId);
+        
+      }
  setCustomError(null)
     // ✅ Show toast
 setToastOpen(true);
@@ -67,18 +108,37 @@ setTimeout(() => {
   setToastOpen(false);
 }, 3000);
 
+
+
+
 // ✅ Navigate after 1 second delay (optional: wait slightly so toast is seen)
 setTimeout(() => {
-  if (Role === "learner") {
-    navigate("/learner/LearnerDash");
-  } else if (Role === "admin") {
-    navigate("/admin/dashboard");
-  } else if (Role === "instructor") {
-    navigate("/instructor/instructorDash");
-  } else {
-    setErrors((prev) => ({ ...prev, login: "Invalid role detected." }));
+  switch (Role) {
+    case "learner":
+      navigate("/learner/LearnerDash");
+      break;
+    case "owner":
+      navigate("/owner/dashboard");
+      break;
+
+    case "admin":
+      navigate("/admin/dashboard");
+      break;
+
+    case "instructor":
+      navigate("/instructor/instructorDash");
+      break;
+
+    default:
+      setErrors((prev) => ({
+        ...prev,
+        login: "Invalid role detected.",
+      }));
   }
-}, 2000); // Enough delay to see toast appear
+}, 2000);
+
+// Enough delay to see toast appear
+
 // success toast visible 3s
     } catch (error) {
       console.error("Login Error:", error.response?.data || error);
@@ -106,7 +166,7 @@ setTimeout(() => {
       <div className="w-full max-w-sm p-6 mx-auto md:h-[370px] bg-white rounded-lg">
         <h2 className="mb-6 text-xl font-bold text-center">Login</h2>
 
-        <div className="inline-flex w-full mb-4 rounded-lg">
+      {/* <div className="inline-flex w-full mb-4 rounded-lg">
           {["Learner", "Instructor", "Admin"].map((role, index) => (
             <button
               key={role}
@@ -127,7 +187,7 @@ setTimeout(() => {
               {role}
             </button>
           ))}
-        </div>
+        </div> */}
 
         <form onSubmit={handleLogin} className="space-y-4">
           <div className="relative">
@@ -208,7 +268,8 @@ setTimeout(() => {
               type="submit"
               className="w-full py-2 font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700"
             >
-              Login as {selectedRole || "Role"}
+              Login
+               {/* as {selectedRole || "Role"} */}
             </button>
           )}
 

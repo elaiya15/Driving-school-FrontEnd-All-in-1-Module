@@ -16,10 +16,9 @@ import {
 } from "react-icons/fa";
 
 import { useRole } from "./AuthContext/AuthContext";
-import { getBranchSession } from "./utils/BranchCookie";
+
 function NewSidebar({ isOpen, onClose }) {
    const sidebarRef = useRef(null);
-console.log(getBranchSession());
 
 
   useEffect(() => initFlowbite(), []);
@@ -99,7 +98,7 @@ console.log(getBranchSession());
 
         <div className="flex flex-col justify-between h-full px-3 pb-5 overflow-y-auto pt-28 dark:bg-blue-800">
           <ul className="space-y-2 font-normal">
-  { ( (role === "owner") && !getBranchSession() ) && (
+  {role === "owner" && (
                   <>
                     <li>
                       <Link
@@ -135,7 +134,7 @@ console.log(getBranchSession());
                 )},
 
 
-            {(role === "admin" || (role === "owner" && getBranchSession())) && (
+            {role === "admin"||role === "owner"&& (
               <>
                 <li>
                   <Link

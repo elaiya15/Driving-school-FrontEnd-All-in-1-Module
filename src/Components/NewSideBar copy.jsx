@@ -11,15 +11,11 @@ import {
   FaClipboardCheck,
   FaUserShield,
   FaSignOutAlt,
-  FaSitemap,
-  FaUsersCog,
 } from "react-icons/fa";
-
 import { useRole } from "./AuthContext/AuthContext";
-import { getBranchSession } from "./utils/BranchCookie";
+
 function NewSidebar({ isOpen, onClose }) {
    const sidebarRef = useRef(null);
-console.log(getBranchSession());
 
 
   useEffect(() => initFlowbite(), []);
@@ -99,43 +95,7 @@ console.log(getBranchSession());
 
         <div className="flex flex-col justify-between h-full px-3 pb-5 overflow-y-auto pt-28 dark:bg-blue-800">
           <ul className="space-y-2 font-normal">
-  { ( (role === "owner") && !getBranchSession() ) && (
-                  <>
-                    <li>
-                      <Link
-                        to="/owner"
-                        onClick={handleLinkClick}
-                        className={`${isActive("/owner/dashboard")} flex items-center p-2 rounded-lg group`}
-                      >
-                        <FaTachometerAlt className="text-xl" />
-                        <span className="ms-4">Owner Dashboard</span>
-                      </Link>
-                    </li>
-                    <li>
-                      <Link
-                        to="/owner/branches"
-                        onClick={handleLinkClick}
-                        className={`${isActive("/owner/branches")} flex items-center p-2 rounded-lg group`}
-                      >
-                        <FaSitemap className="text-xl" />
-                        <span className="ms-4">Branch</span>
-                      </Link>
-                    </li>
-                    <li>
-                      <Link
-                        to="/owner/branch-admin"
-                        onClick={handleLinkClick}
-                        className={`${isActive("/owner/branch-admin")} flex items-center p-2 rounded-lg group`}
-                      >
-                        <FaUsersCog className="text-xl" />
-                        <span className="ms-4">Branch Admins</span>
-                      </Link>
-                    </li>
-                  </>
-                )},
-
-
-            {(role === "admin" || (role === "owner" && getBranchSession())) && (
+            {role === "admin" && (
               <>
                 <li>
                   <Link

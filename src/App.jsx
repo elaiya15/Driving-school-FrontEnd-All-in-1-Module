@@ -70,7 +70,13 @@ import SplashScreen from "./Components/SplashScreen";
 import Page404 from "./Components/Page404";
 import ProtectedRoute from "./Components/ProtectedRoute";
 import { RoleProvider  } from './Components/AuthContext/AuthContext.jsx';
+import OwnerDash from "./Main/Owner/ownerDashboard.jsx";
+import OwnerLayout from "./Main/Owner/OwnerLayout.jsx";
 import NetworkStatus from "./Components/NetworkStatus"; // Add this import
+import BranchList from "./Main/Owner/branchs.jsx";
+import BranchCreate from "./Main/Owner/AddBranch.jsx";
+import OwnerGuard from "./OwnerGuard.jsx";
+import AdminGuard from "./AdminGuard.jsx";
 export const URL = import.meta.env.VITE_BACK_URL;
 
 function App() {
@@ -95,10 +101,27 @@ function App() {
         <Route path="/form15" element={<Form15 />} />
         <Route path="/Driving5" element={<DrivingCertificateForm5 />} />
         <Route path="*" element={<Page404 />} />
+        {/* Owner Protected Routes */}
+        <Route element={<OwnerGuard />}>
+      <Route 
+      path="owner"
+          element={<ProtectedRoute allowedRoles={["owner"]}>
+              <OwnerLayout>
+        <AdminDash />
+      </OwnerLayout>
+          </ProtectedRoute>} >
+            <Route index element={<Navigate to="dashboard" replace />} />
+          <Route path="dashboard" element={<OwnerDash />}/>
+          <Route path="branches" element={<BranchList />} />
+          <Route path="branches/create" element={<BranchCreate />} />
+          <Route path="branch-admin" element={<OwnerDash />} />
+       </Route>
+       </Route>
         {/* Admin Protected Routes */}
+         <Route element={<AdminGuard />}>
         <Route
           path="admin"
-          element={<ProtectedRoute allowedRoles={["admin"]}><AdminDash /></ProtectedRoute>}
+          element={<ProtectedRoute allowedRoles={["admin","owner"]}><AdminDash /></ProtectedRoute>}
         >
           <Route index element={<Navigate to="dashboard" replace />} />
           <Route path="dashboard" element={<Dashboard />} />
@@ -159,6 +182,7 @@ function App() {
             <Route path=":id/edit" element={<SmsSetting />} />
           </Route>
         </Route>
+        </Route>
 
   {/* Learner Protected Routes */}
         <Route
@@ -194,6 +218,7 @@ function App() {
       </Routes>
     </RoleProvider>
     </Router>
+    
   );
 }
 

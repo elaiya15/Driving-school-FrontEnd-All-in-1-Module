@@ -103,7 +103,7 @@ const onSubmit = async (data) => {
 
   try {
     setLoading(true)
-    await axios.post(`${BURL}/api/admin/create-Learner`, formData, {
+    await axios.post(`${BURL}/api/v3/learner/create-Learner`, formData, {
       withCredentials: true,
     });
 

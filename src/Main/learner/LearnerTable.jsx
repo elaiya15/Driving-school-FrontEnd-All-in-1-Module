@@ -133,7 +133,7 @@ const LearnerTable = () => {
           params.todate = toDate;
         }
 
-        const response = await axios.get(`${URL}/api/user/learners`, {
+        const response = await axios.get(`${URL}/api/v3/learner`, {
           params,
           withCredentials: true,
           signal: controller.signal,
@@ -374,13 +374,13 @@ const LearnerTable = () => {
               {learners.length > 0 ? (
                 learners.map((learner, index) => (
                   <tr key={learner._id} className="bg-white border-b">
-                    <td className="sm:px-2  py-4">{(currentPage - 1) * limit + index + 1}</td>
-                    <td className="sm:px-2  py-4">
+                    <td className="py-4 sm:px-2">{(currentPage - 1) * limit + index + 1}</td>
+                    <td className="py-4 sm:px-2">
                       <img
                         src={`${URL}/api/image-proxy/${extractDriveFileId(learner.photo)}?t=${Date.now()}`}
                         alt="Learner"
                         className="object-cover w-16 h-16 border-4 border-gray-100 rounded-full shadow-md"
-                          // className="w-16 h-16 object-cover rounded-full border-4 border-white shadow-md"
+                          // className="object-cover w-16 h-16 border-4 border-white rounded-full shadow-md"
 
                       />
                     </td>

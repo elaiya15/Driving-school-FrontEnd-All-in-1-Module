@@ -40,13 +40,15 @@ const DashboardAdmin = () => {
     const fetchDashboard = async () => {
       
       try {
-         if (role !== "admin") {
-        throw new Error("Unauthorized: Only admin can access this dashboard.");
-      }
-        const res = await axios.get(`${URL}/api/dashboard/admin`,{
+        if (role !== "admin" && role !== "owner") {
+  throw new Error("Unauthorized: Only admin or owner can access this dashboard.");
+}
+
+        const res = await axios.get(`${URL}/api/v1/dashboard/admin`,{
            withCredentials: true,
         });
         const data = res.data;
+console.log(data);
 
         setSummary({
           totalLearners: data.totalLearners,
