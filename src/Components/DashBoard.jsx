@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 const URL=import.meta.env.VITE_BACK_URL
 import {useRole} from './AuthContext/AuthContext.jsx';
+import branchHeaders from "./utils/headers.jsx";
 
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer,
@@ -44,9 +45,7 @@ const DashboardAdmin = () => {
   throw new Error("Unauthorized: Only admin or owner can access this dashboard.");
 }
 
-        const res = await axios.get(`${URL}/api/v1/dashboard/admin`,{
-           withCredentials: true,
-        });
+        const res = await axios.get(`${URL}/api/v2/dashboard/admin`,branchHeaders());
         const data = res.data;
 console.log(data);
 

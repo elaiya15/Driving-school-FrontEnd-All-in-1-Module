@@ -6,6 +6,7 @@ import InstructorDashAttendance from "../attendance/instructor/InstructorDashAtt
 import moment from "moment";
 import { extractDriveFileId } from "../../Components/ImageProxyRouterFunction/funtion.js";
 import { useRole } from "../../Components/AuthContext/AuthContext";
+import branchHeaders from "../../Components/utils/headers.jsx";
 
 const InstructorProfile = () => {
   const location = useLocation();
@@ -19,9 +20,7 @@ const InstructorProfile = () => {
   useEffect(() => {
     const fetchInstructor = async () => {
       try {
-        const { data } = await axios.get(`${URL}/api/user/instructor/${InstructorId}`, {
-          withCredentials: true,
-        });
+        const { data } = await axios.get(`${URL}/api/v2/instructor/${InstructorId}`, branchHeaders());
 
         setInstructor(data);
         setPhotoVersion(Date.now()); // Ensure new image loads after update

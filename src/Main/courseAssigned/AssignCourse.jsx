@@ -7,6 +7,7 @@ import { useRole } from "../../Components/AuthContext/AuthContext";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
+import branchHeaders from "../../Components/utils/headers.jsx";
 
 const schema = yup.object().shape({
   learner: yup.string().required("Learner is required"),
@@ -57,10 +58,10 @@ const AssignCourse = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const config = { withCredentials: true };
+        const config = branchHeaders();
         const [learnersRes, coursesRes] = await Promise.all([
-          axios.get(`${URL}/api/user/learners`, config),
-          axios.get(`${URL}/api/courses`, config),
+          axios.get(`${URL}/api/v2/learner`, config),
+          axios.get(`${URL}/api/v2/courses`, config),
         ]);
         setLearners(Array.isArray(learnersRes.data.learners) ? learnersRes.data.learners : []);
         setCourses(Array.isArray(coursesRes.data.courses) ? coursesRes.data.courses : []);
@@ -85,8 +86,8 @@ const AssignCourse = () => {
     setErrorMessages([]);
     try {
       setDataLoading(true);
-      const config = { withCredentials: true };
-      await axios.post(`${URL}/api/course-assigned`, {
+        const config = branchHeaders();
+      await axios.post(`${URL}/api/v2/course-assigned`, {
         learner: data.learner,
         course: [data.course],
       }, config);

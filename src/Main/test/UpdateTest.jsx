@@ -7,6 +7,7 @@ import axios from "axios";
 import { URL } from "../../App";
 import { extractDriveFileId } from "../../Components/ImageProxyRouterFunction/funtion.js";
 import { useRole } from "../../Components/AuthContext/AuthContext";
+import branchHeaders from "../../Components/utils/headers.jsx";
 
 const schema = yup.object().shape({
   testDate: yup.string().required("Date is required"),
@@ -46,9 +47,7 @@ const UpdateTest = () => {
   useEffect(() => {
     const fetchLearners = async () => {
       try {
-        const response = await axios.get(`${URL}/api/user/learners`, {
-          withCredentials: true,
-        });
+        const response = await axios.get(`${URL}/api/v2/learner`, branchHeaders());
         setLearners(response.data.learners || []);
       } catch (error) {
         if (
@@ -71,9 +70,7 @@ const UpdateTest = () => {
   useEffect(() => {
     const fetchTest = async () => {
       try {
-        const res = await axios.get(`${URL}/api/tests/ById/${id}`, {
-          withCredentials: true,
-        });
+        const res = await axios.get(`${URL}/api/v2/tests/ById/${id}`,branchHeaders());
 
         const test = res.data.test;
         setLearnerId(test.learnerId?._id || "");
@@ -119,14 +116,14 @@ const UpdateTest = () => {
     try {
       setLoading(true);
       await axios.put(
-        `${URL}/api/tests/${id}`,
+        `${URL}/api/v2/tests/${id}`,
         {
           learnerId,
           testType: selectedTest,
           date: data.testDate,
           result: data.result,
         },
-        { withCredentials: true }
+        branchHeaders()
       );
 
       reset();

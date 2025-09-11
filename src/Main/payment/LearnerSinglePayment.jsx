@@ -5,6 +5,8 @@ import moment from "moment";
 import Pagination from "../../Components/Pagination";
 import { URL } from "../../App";
 import { useRole } from "../../Components/AuthContext/AuthContext";
+import branchHeaders from "../../Components/utils/headers";
+
 // ✅ Custom toast component
 const Toast = ({ message }) => (
   <div className="fixed top-5 right-5 z-50 w-[300px] max-w-xs p-4 text-white bg-red-600 rounded-md shadow-md animate-fade-in-down">
@@ -65,8 +67,8 @@ const LearnerSinglePayment = () => {
 
     setLoading(true);
     try {
-      const res = await axios.get(`${URL}/api/payments/${paymentId}`, {
-        withCredentials: true,
+      const res = await axios.get(`${URL}/api/v2/payments/${paymentId}`, {
+       ...branchHeaders(),
         params: {
           search: searchTerm.trim() || undefined,
           paymentMethod: paymentMethod || undefined,

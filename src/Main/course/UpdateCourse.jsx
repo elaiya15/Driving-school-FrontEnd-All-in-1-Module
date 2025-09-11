@@ -6,7 +6,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { URL } from "../../App";
 import { useRole } from "../../Components/AuthContext/AuthContext";
-
+import branchHeaders from "../../Components/utils/headers";
 const schema = yup.object().shape({
   courseName: yup
     .string()
@@ -59,9 +59,7 @@ const UpdateCourse = () => {
   useEffect(() => {
     const fetchCourse = async () => {
       try {
-        const res = await axios.get(`${URL}/api/courses/${id}`, {
-          withCredentials: true,
-        });
+        const res = await axios.get(`${URL}/api/v1/courses/${id}`, branchHeaders());
         reset(res.data);
       } catch (error) {
         if (
@@ -88,9 +86,7 @@ const UpdateCourse = () => {
     setErrorMessages([]); // clear old errors
 
     try {
-      await axios.put(`${URL}/api/courses/${id}`, data, {
-        withCredentials: true,
-      });
+      await axios.put(`${URL}/api/v2/courses/${id}`, data, branchHeaders());
 
       setToastOpen(true);
       setTimeout(() => {
@@ -107,7 +103,7 @@ const UpdateCourse = () => {
          setErrorMessages(["Credential Invalid or Expired Please Login Again"]);
         return setTimeout(() => {
         setErrorMessages([]);
-          // clearAuthState();
+          clearAuthState();
         }, 2000);
       }
 

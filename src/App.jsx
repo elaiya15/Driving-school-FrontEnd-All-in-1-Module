@@ -74,7 +74,11 @@ import OwnerDash from "./Main/Owner/ownerDashboard.jsx";
 import OwnerLayout from "./Main/Owner/OwnerLayout.jsx";
 import NetworkStatus from "./Components/NetworkStatus"; // Add this import
 import BranchList from "./Main/Owner/branchs.jsx";
+import AddAdmin from "./Main/Owner/AddAdmin.jsx";
+import BranchAdminList from "./Main/Owner/branchAdminList.jsx";
 import BranchCreate from "./Main/Owner/AddBranch.jsx";
+import AdminPreview from "./Main/Owner/AdminPreview.jsx";
+import AdminEdit from "./Main/Owner/AdminEdit.jsx";
 import OwnerGuard from "./OwnerGuard.jsx";
 import AdminGuard from "./AdminGuard.jsx";
 export const URL = import.meta.env.VITE_BACK_URL;
@@ -114,7 +118,10 @@ function App() {
           <Route path="dashboard" element={<OwnerDash />}/>
           <Route path="branches" element={<BranchList />} />
           <Route path="branches/create" element={<BranchCreate />} />
-          <Route path="branch-admin" element={<OwnerDash />} />
+          <Route path="branch-admin" element={<BranchAdminList />} />
+          <Route path="add-admin" element={<AddAdmin />} />
+          <Route path="branch-admin/:branchId/:id/view" element={<AdminPreview />} />
+          <Route path="branch-admin/:branchId/:id/edit" element={<AdminEdit />} />
        </Route>
        </Route>
         {/* Admin Protected Routes */}

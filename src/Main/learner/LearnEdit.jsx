@@ -7,6 +7,7 @@ import { extractDriveFileId } from "../../Components/ImageProxyRouterFunction/fu
 import { useRole } from "../../Components/AuthContext/AuthContext";
 import axios from "axios";
 import { URL as BURL } from "../../App";
+import branchHeaders from "../../Components/utils/headers";
 
 const schema = yup.object().shape({
   fullName: yup.string().required("Full name is required"),
@@ -44,7 +45,7 @@ const LearEdit = () => {
   useEffect(() => {
     const fetchLearner = async () => {
       try {
-        const fetch = await axios.get(`${BURL}/api/admin/learner/${id}`, { withCredentials: true });
+        const fetch = await axios.get(`${BURL}/api/v3/learner/${id}`,branchHeaders());
         const data = fetch.data;
 
         Object.entries(data).forEach(([key, val]) => {

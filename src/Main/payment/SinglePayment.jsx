@@ -6,7 +6,7 @@ import Pagination from "../../Components/Pagination";
 import moment from "moment";
 import { FaSyncAlt } from "react-icons/fa";
 import { useRole } from "../../Components/AuthContext/AuthContext";
-
+import branchHeaders from "../../Components/utils/headers";
 const SinglePayment = () => {
   const navigate = useNavigate();
   const {role, user,setUser,setRole,clearAuthState} =  useRole();
@@ -50,9 +50,9 @@ const SinglePayment = () => {
         });
 
         const response = await axios.get(
-          `${URL}/api/payments/${id}?${queryParams}`,
+          `${URL}/api/v2/payments/${id}?${queryParams}`,
           {
-           withCredentials: true,
+           ...branchHeaders(), 
             signal: controller.signal,
           }
         );

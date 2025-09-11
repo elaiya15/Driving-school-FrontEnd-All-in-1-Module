@@ -6,7 +6,7 @@ import moment from "moment";
 import { useNavigate, useLocation } from "react-router-dom";
 import { extractDriveFileId } from "../../Components/ImageProxyRouterFunction/funtion.js";
 import { useRole } from "../../Components/AuthContext/AuthContext";
-
+import branchHeaders from "../../Components/utils/headers.jsx";
 const PaymentTable = () => {
   const [payments, setPayments] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -19,7 +19,7 @@ const PaymentTable = () => {
 
   const navigate = useNavigate();
   const location = useLocation();
-        const {role, user,setUser,setRole,clearAuthState} =  useRole();
+  const { role, user, setUser, setRole, clearAuthState } = useRole();
 
   const itemsPerPage = 10;
 
@@ -47,76 +47,76 @@ const PaymentTable = () => {
     navigate({ search: params.toString() });
   };
 
-useEffect(() => {
-  const controller = new AbortController();
-  let debounceTimer;
+  useEffect(() => {
+    const controller = new AbortController();
+    let debounceTimer;
 
-  const fetchPayments = async () => {
-    setLoading(true);
-    try {
+    const fetchPayments = async () => {
+      setLoading(true);
+      try {
+        const params = new URLSearchParams();
+        if (searchTerm) params.set("search", searchTerm);
+        if (paymentMethod && paymentMethod !== "All")
+          params.set("paymentMethod", paymentMethod);
+        if (fromDate && toDate) {
+          params.set("fromdate", formatDate(fromDate));
+          params.set("todate", formatDate(toDate));
+        }
+        params.set("page", currentPage);
+        params.set("limit", itemsPerPage);
 
-      const params = new URLSearchParams();
-      if (searchTerm) params.set("search", searchTerm);
-      if (paymentMethod && paymentMethod !== "All")
-        params.set("paymentMethod", paymentMethod);
-      if (fromDate && toDate) {
-        params.set("fromdate", formatDate(fromDate));
-        params.set("todate", formatDate(toDate));
+        updateURLParams({
+          searchTerm,
+          paymentMethod,
+          fromDate,
+          toDate,
+          page: currentPage,
+        });
+
+        const response = await axios.get(`${URL}/api/v2/payments`, {
+          ...branchHeaders(),
+          params,
+          signal: searchTerm.trim() ? controller.signal : undefined,
+        });
+
+        setPayments(response.data.payments);
+        setTotalPages(response.data.totalPages);
+      } catch (error) {
+        if (
+          error.response &&
+          (error.response.status === 401 ||
+            error.response.data.message ===
+              "Credential Invalid or Expired Please Login Again")
+        ) {
+          setTimeout(() => {
+            clearAuthState();
+            navigate("/");
+          }, 2000);
+        }
+      } finally {
+        setLoading(false);
       }
-      params.set("page", currentPage);
-      params.set("limit", itemsPerPage);
+    };
 
-      updateURLParams({
-        searchTerm,
-        paymentMethod,
-        fromDate,
-        toDate,
-        page: currentPage,
-      });
+    const isSearchDebounced = searchTerm.trim().length > 0;
 
-      const response = await axios.get(`${URL}/api/payments`, {
-        params,
-        withCredentials: true,
-        signal: searchTerm.trim() ? controller.signal : undefined,
-      });
-
-      setPayments(response.data.payments);
-      setTotalPages(response.data.totalPages);
-    } catch (error) {
-      if (
-        error.response &&
-        (error.response.status === 401 ||
-          error.response.data.message === "Credential Invalid or Expired Please Login Again")
-      ) {
-        setTimeout(() => {
-         clearAuthState();
-          navigate("/");
-        }, 2000);
-      }
-    } finally {
-      setLoading(false);
+    if (isSearchDebounced) {
+      debounceTimer = setTimeout(fetchPayments, 2000);
+    } else if (
+      searchTerm === "" &&
+      (paymentMethod || (fromDate && toDate) || (!fromDate && !toDate))
+    ) {
+      // Only call if:
+      // - no search (normal)
+      // - and either filter or full valid date range
+      fetchPayments();
     }
-  };
 
-  const isSearchDebounced = searchTerm.trim().length > 0;
-
-  if (isSearchDebounced) {
-    debounceTimer = setTimeout(fetchPayments, 2000);
-  } else if (
-    searchTerm === "" &&
-    (paymentMethod || (fromDate && toDate) || (!fromDate && !toDate))
-  ) {
-    // Only call if:
-    // - no search (normal)
-    // - and either filter or full valid date range
-    fetchPayments();
-  }
-
-  return () => {
-    if (debounceTimer) clearTimeout(debounceTimer);
-    if (isSearchDebounced) controller.abort();
-  };
-}, [searchTerm, paymentMethod, fromDate, toDate, currentPage]);
+    return () => {
+      if (debounceTimer) clearTimeout(debounceTimer);
+      if (isSearchDebounced) controller.abort();
+    };
+  }, [searchTerm, paymentMethod, fromDate, toDate, currentPage]);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -125,14 +125,14 @@ useEffect(() => {
     const fromDateFromURL = params.get("fromdate") || "";
     const toDateFromURL = params.get("todate") || "";
     const pageFromURL = parseInt(params.get("page")) || 1;
-  // If no params found, set default ?page=1&limit=10
-  if (!currentPage || !itemsPerPage) {
-    const query = new URLSearchParams();
-    query.set("page", "1");
-    query.set("limit", "10");
-    navigate({ search: query.toString() }, { replace: true });
-    return;
-  }
+    // If no params found, set default ?page=1&limit=10
+    if (!currentPage || !itemsPerPage) {
+      const query = new URLSearchParams();
+      query.set("page", "1");
+      query.set("limit", "10");
+      navigate({ search: query.toString() }, { replace: true });
+      return;
+    }
     setSearchTerm(searchFromURL);
     setPaymentMethod(paymentMethodFromURL);
     setFromDate(fromDateFromURL);
@@ -166,60 +166,58 @@ useEffect(() => {
     setCurrentPage(1);
   };
 
+  const handleFromDateChange = (e) => {
+    const value = e.target.value;
 
-const handleFromDateChange = (e) => {
-  const value = e.target.value;
+    if (!value) {
+      setFromDate("");
+      setToDate("");
+      updateURLParams({
+        searchTerm,
+        paymentMethod,
+        fromDate: "",
+        toDate: "",
+        page: 1,
+      });
+    } else {
+      setFromDate(value);
+      setToDate(""); // reset toDate if fromDate changes
+      updateURLParams({
+        searchTerm,
+        paymentMethod,
+        fromDate: value,
+        toDate: "",
+        page: 1,
+      });
+    }
 
-  if (!value) {
-    setFromDate("");
-    setToDate("");
-    updateURLParams({
-      searchTerm,
-      paymentMethod,
-      fromDate: "",
-      toDate: "",
-      page: 1,
-    });
-  } else {
-    setFromDate(value);
-    setToDate(""); // reset toDate if fromDate changes
-    updateURLParams({
-      searchTerm,
-      paymentMethod,
-      fromDate: value,
-      toDate: "",
-      page: 1,
-    });
-  }
+    setCurrentPage(1);
+  };
+  const handleToDateChange = (e) => {
+    const value = e.target.value;
 
-  setCurrentPage(1);
-};
-const handleToDateChange = (e) => {
-  const value = e.target.value;
+    if (!value) {
+      setToDate("");
+      updateURLParams({
+        searchTerm,
+        paymentMethod,
+        fromDate: "",
+        toDate: "",
+        page: 1,
+      });
+    } else {
+      setToDate(value);
+      updateURLParams({
+        searchTerm,
+        paymentMethod,
+        fromDate,
+        toDate: value,
+        page: 1,
+      });
+    }
 
-  if (!value) {
-    setToDate("");
-    updateURLParams({
-      searchTerm,
-      paymentMethod,
-      fromDate:"",
-      toDate: "",
-      page: 1,
-    });
-  } else {
-    setToDate(value);
-    updateURLParams({
-      searchTerm,
-      paymentMethod,
-      fromDate,
-      toDate: value,
-      page: 1,
-    });
-  }
-
-  setCurrentPage(1);
-};
-
+    setCurrentPage(1);
+  };
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
@@ -240,10 +238,8 @@ const handleToDateChange = (e) => {
         </button>
       </div>
 
-     
-             <div className="flex flex-col gap-4 mb-4 lg:flex-row lg:items-center lg:justify-between">
-
-                   <div className="w-full lg:w-1/3">
+      <div className="flex flex-col gap-4 mb-4 lg:flex-row lg:items-center lg:justify-between">
+        <div className="w-full lg:w-1/3">
           <div className="relative">
             <svg
               className="absolute left-3 top-2.5 text-gray-400 w-5 h-5"
@@ -344,7 +340,7 @@ const handleToDateChange = (e) => {
               onFocus={(event) => (event.nativeEvent.target.defaultValue = "")}
               className="w-full px-3 py-2 text-sm text-gray-900 border border-gray-300 rounded-lg peer disabled:bg-gray-100 disabled:cursor-not-allowed"
               min={fromDate || undefined}
-               disabled={!fromDate}
+              disabled={!fromDate}
             />
             <label className="absolute left-3 top-[-8px] text-xs bg-white px-1 text-gray-500">
               To

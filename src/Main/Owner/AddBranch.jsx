@@ -5,7 +5,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import axios from "axios";
 import { URL } from "../../App";
 import { useRole } from "../../Components/AuthContext/AuthContext.jsx";
-
+import branchHeaders from "../../Components/utils/headers";
 const BranchCreate = () => {
       const { user } = useRole();
   const [admins, setAdmins] = useState([]);
@@ -63,7 +63,7 @@ const BranchCreate = () => {
   const fetchAdmins = async () => {
     try {
       let organizationId = user ? user.organizationId : null;
-      const res = await axios.get(`${URL}/api/admins/${organizationId}`);
+      const res = await axios.get(`${URL}/api/v1/admins/${organizationId}`,branchHeaders());
 
 -     setAdmins(res.data);
 +     setAdmins(res.data?.data || []);  // ✅ Extract the array safely
@@ -95,7 +95,7 @@ const BranchCreate = () => {
             throw new Error("Organization ID is missing");
         }
 // return
-      await axios.post(`${URL}/api/branches/create/${organizationId}`, payload);
+      await axios.post(`${URL}/api/branches/create/${organizationId}`, payload,branchHeaders());
       alert("Branch created successfully!");
       reset();
       setSelectedAdmin("");

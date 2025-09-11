@@ -6,6 +6,7 @@ import axios from "axios";
 import Pagination from "../../Components/Pagination";
 import { extractDriveFileId } from "../../Components/ImageProxyRouterFunction/funtion.js";
 import { useRole } from "../../Components/AuthContext/AuthContext";
+import branchHeaders from "../../Components/utils/headers.jsx";
 
 const AssignCourseTable = () => {
   const navigate = useNavigate();
@@ -83,8 +84,8 @@ const AssignCourseTable = () => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const response = await axios.get(`${URL}/api/course-assigned`, {
-          withCredentials: true,
+        const response = await axios.get(`${URL}/api/v2/course-assigned`, {
+         ...branchHeaders(),
           params: {
             search: search.length >= 3 ? search : undefined,
             statusOne: statusOne || undefined,

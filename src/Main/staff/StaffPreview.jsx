@@ -6,6 +6,7 @@ import axios from "axios";
 import moment from "moment";
 import { extractDriveFileId } from "../../Components/ImageProxyRouterFunction/funtion.js";
 import { useRole } from "../../Components/AuthContext/AuthContext";
+import branchHeaders from "../../Components/utils/headers.jsx";
 
 const StaffPreview = () => {
       const location = useLocation();
@@ -21,9 +22,7 @@ const StaffPreview = () => {
     const fetchstaff = async () => {
       try {
     
-        const response = await axios.get(`${URL}/api/staff/${id}`, {
-          withCredentials: true,
-        });
+        const response = await axios.get(`${URL}/api/v2/staff/${id}`, branchHeaders());
 
         setStaff(response.data.staff);
         setReloadKey(Date.now()); // triggers image refresh

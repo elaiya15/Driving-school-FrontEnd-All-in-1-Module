@@ -7,6 +7,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { URL } from "../../App";
 import { useRole } from "../../Components/AuthContext/AuthContext";
 import { extractDriveFileId } from "../../Components/ImageProxyRouterFunction/funtion";
+import branchHeaders from "../../Components/utils/headers";
 
 const schema = yup.object().shape({
   statusOne: yup.string().required("Status is required"),
@@ -61,11 +62,11 @@ const AssignUpdate = () => {
 
   const fetchData = async () => {
     try {
-      const config = { withCredentials: true };
+      const config = branchHeaders();
       const [resAssign, resLearners, resCourses] = await Promise.all([
-        axios.get(`${URL}/api/course-assigned/ById/${id}`, config),
-        axios.get(`${URL}/api/user/learners`, config),
-        axios.get(`${URL}/api/courses`, config),
+        axios.get(`${URL}/api/v2/course-assigned/ById/${id}`, config),
+        axios.get(`${URL}/api/v2/learner`, config),
+        axios.get(`${URL}/api/v2/courses`, config),
       ]);
 
       const data = resAssign.data;
@@ -111,8 +112,8 @@ const AssignUpdate = () => {
     setLoading(true);
     setErrorMessages([]);
     try {
-      const config = { withCredentials: true };
-      await axios.put(`${URL}/api/course-assigned/${id}`, {
+      const config = branchHeaders();
+      await axios.put(`${URL}/api/v2/course-assigned/${id}`, {
         learner: selectedLearner,
         course: selectedCourse,
         statusOne: data.statusOne,

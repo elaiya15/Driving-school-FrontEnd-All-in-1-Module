@@ -9,6 +9,7 @@ import SingleCourseAssign from "../../Main/courseAssigned/SingleCourseAssign";
 import SingleAttendance from "../attendance/learner/SingleAttendance";
 import { extractDriveFileId } from "../../Components/ImageProxyRouterFunction/funtion.js";
 import { useRole } from "../../Components/AuthContext/AuthContext"; // adjust path as needed
+import branchHeaders from "../../Components/utils/headers.jsx";
 
 // ✅ Custom toast component
 const Toast = ({ message }) => (
@@ -30,9 +31,7 @@ const LearnPreview = () => {
   useEffect(() => {
     const fetchLearner = async () => {
       try {
-        const response = await axios.get(`${URL}/api/user/learner/${id}`, {
-          withCredentials: true,
-        });
+        const response = await axios.get(`${URL}/api/v3/learner/${id}`, branchHeaders());
         setLearner(response.data);
       } catch (error) {
         if (error.name !== "AbortError") {

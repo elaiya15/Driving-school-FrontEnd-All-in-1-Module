@@ -13,7 +13,10 @@ const BranchTable = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { clearAuthState, user } = useRole();
-const [selectedBranch, setSelectedBranch] = useState(null);
+  const [confirmModal, setConfirmModal] = useState(null);
+  // will hold branchId when asking confirmation
+
+  const [selectedBranch, setSelectedBranch] = useState(null);
   const [branches, setBranches] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -39,156 +42,156 @@ const [selectedBranch, setSelectedBranch] = useState(null);
     });
     navigate({ search: updated.toString() }, { replace: true });
   };
-//old
-//   useEffect(() => {
-//     const controller = new AbortController();
-//     const trimmedSearch = searchTerm.trim();
+  //old
+  //   useEffect(() => {
+  //     const controller = new AbortController();
+  //     const trimmedSearch = searchTerm.trim();
 
-//     const fetchData = async () => {
-//       setLoading(true);
-//       setError(null);
+  //     const fetchData = async () => {
+  //       setLoading(true);
+  //       setError(null);
 
-//       try {
-//         const params = {
-//           page: currentPage,
-//           limit,
-//           ...(trimmedSearch && { search: trimmedSearch }),
-//         };
+  //       try {
+  //         const params = {
+  //           page: currentPage,
+  //           limit,
+  //           ...(trimmedSearch && { search: trimmedSearch }),
+  //         };
 
-//         if (!user || !user.organizationId) {
-//           throw new Error("User or organization ID is not available");
-//         }
+  //         if (!user || !user.organizationId) {
+  //           throw new Error("User or organization ID is not available");
+  //         }
 
-//         const res = await axios.get(
-//           `${URL}/api/v1/branches/organization_branches/${user.organizationId}`,
-//           {
-//             params,
-//             withCredentials: true,
-//             signal: controller.signal,
-//           }
-//         );
-//         setBranches(res.data || []); // ✅ make sure it's an array
-//         setTotalPages(res.data.totalPages || 1);
-//       } catch (err) {
-//         if (!axios.isCancel(err)) {
-//           setError(err?.response?.data?.message || err.message);
-//           setTimeout(() => setError(null), 4000);
+  //         const res = await axios.get(
+  //           `${URL}/api/v1/branches/organization_branches/${user.organizationId}`,
+  //           {
+  //             params,
+  //             withCredentials: true,
+  //             signal: controller.signal,
+  //           }
+  //         );
+  //         setBranches(res.data || []); // ✅ make sure it's an array
+  //         setTotalPages(res.data.totalPages || 1);
+  //       } catch (err) {
+  //         if (!axios.isCancel(err)) {
+  //           setError(err?.response?.data?.message || err.message);
+  //           setTimeout(() => setError(null), 4000);
 
-//           if (
-//             err.response &&
-//             (err.response.status === 401 ||
-//               err.response.data.message ===
-//                 "Credential Invalid or Expired Please Login Again")
-//           ) {
-//             setTimeout(() => clearAuthState(), 2000);
-//           }
-//         }
-//       } finally {
-//         setLoading(false);
-//       }
-//     };
+  //           if (
+  //             err.response &&
+  //             (err.response.status === 401 ||
+  //               err.response.data.message ===
+  //                 "Credential Invalid or Expired Please Login Again")
+  //           ) {
+  //             setTimeout(() => clearAuthState(), 2000);
+  //           }
+  //         }
+  //       } finally {
+  //         setLoading(false);
+  //       }
+  //     };
 
-//     const prevSearch = lastSearchValue.current;
-//     const isSearchChanged = trimmedSearch !== prevSearch;
-//     const isPaste =
-//       isSearchChanged && trimmedSearch.length - prevSearch.length > 1;
+  //     const prevSearch = lastSearchValue.current;
+  //     const isSearchChanged = trimmedSearch !== prevSearch;
+  //     const isPaste =
+  //       isSearchChanged && trimmedSearch.length - prevSearch.length > 1;
 
-//     lastSearchValue.current = trimmedSearch;
+  //     lastSearchValue.current = trimmedSearch;
 
-//     if (debounceRef.current) clearTimeout(debounceRef.current);
+  //     if (debounceRef.current) clearTimeout(debounceRef.current);
 
-//     if (isSearchChanged) {
-//       if (isPaste || !trimmedSearch) {
-//         fetchData();
-//       } else {
-//         debounceRef.current = setTimeout(fetchData, 1500);
-//       }
-//     } else {
-//       fetchData();
-//     }
+  //     if (isSearchChanged) {
+  //       if (isPaste || !trimmedSearch) {
+  //         fetchData();
+  //       } else {
+  //         debounceRef.current = setTimeout(fetchData, 1500);
+  //       }
+  //     } else {
+  //       fetchData();
+  //     }
 
-//     return () => {
-//       controller.abort();
-//       if (debounceRef.current) clearTimeout(debounceRef.current);
-//     };
-//   }, [searchTerm, currentPage]);
+  //     return () => {
+  //       controller.abort();
+  //       if (debounceRef.current) clearTimeout(debounceRef.current);
+  //     };
+  //   }, [searchTerm, currentPage]);
 
-// 🔹 define fetchData outside useEffect so it can be reused
-const fetchData = async (controllerSignal) => {
-  setLoading(true);
-  setError(null);
+  // 🔹 define fetchData outside useEffect so it can be reused
+  const fetchData = async (controllerSignal) => {
+    setLoading(true);
+    setError(null);
 
-  try {
-    const params = {
-      page: currentPage,
-      limit,
-      ...(searchTerm.trim() && { search: searchTerm.trim() }),
-    };
+    try {
+      const params = {
+        page: currentPage,
+        limit,
+        ...(searchTerm.trim() && { search: searchTerm.trim() }),
+      };
 
-    if (!user || !user.organizationId) {
-      throw new Error("User or organization ID is not available");
-    }
-
-    const res = await axios.get(
-      `${URL}/api/v1/branches/organization_branches/${user.organizationId}`,
-      {
-        params,
-        withCredentials: true,
-        signal: controllerSignal,
+      if (!user || !user.organizationId) {
+        throw new Error("User or organization ID is not available");
       }
-    );
 
-    setBranches(res.data || []);
-    setTotalPages(res.data.totalPages || 1);
-  } catch (err) {
-    if (!axios.isCancel(err)) {
-      setError(err?.response?.data?.message || err.message);
-      setTimeout(() => setError(null), 4000);
-
-      if (
-        err.response &&
-        (err.response.status === 401 ||
-          err.response.data.message ===
-            "Credential Invalid or Expired Please Login Again")
-      ) {
-        setTimeout(() => clearAuthState(), 2000);
-      }
-    }
-  } finally {
-    setLoading(false);
-  }
-};
-
-useEffect(() => {
-  const controller = new AbortController();
-
-  const prevSearch = lastSearchValue.current;
-  const isSearchChanged = searchTerm.trim() !== prevSearch;
-  const isPaste =
-    isSearchChanged && searchTerm.trim().length - prevSearch.length > 1;
-
-  lastSearchValue.current = searchTerm.trim();
-
-  if (debounceRef.current) clearTimeout(debounceRef.current);
-
-  if (isSearchChanged) {
-    if (isPaste || !searchTerm.trim()) {
-      fetchData(controller.signal);
-    } else {
-      debounceRef.current = setTimeout(
-        () => fetchData(controller.signal),
-        1500
+      const res = await axios.get(
+        `${URL}/api/v1/branches/organization_branches/${user.organizationId}`,
+        {
+          params,
+          withCredentials: true,
+          signal: controllerSignal,
+        }
       );
-    }
-  } else {
-    fetchData(controller.signal);
-  }
 
-  return () => {
-    controller.abort();
-    if (debounceRef.current) clearTimeout(debounceRef.current);
+      setBranches(res.data || []);
+      setTotalPages(res.data.totalPages || 1);
+    } catch (err) {
+      if (!axios.isCancel(err)) {
+        setError(err?.response?.data?.message || err.message);
+        setTimeout(() => setError(null), 4000);
+
+        if (
+          err.response &&
+          (err.response.status === 401 ||
+            err.response.data.message ===
+              "Credential Invalid or Expired Please Login Again")
+        ) {
+          setTimeout(() => clearAuthState(), 2000);
+        }
+      }
+    } finally {
+      setLoading(false);
+    }
   };
-}, [searchTerm, currentPage]);
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    const prevSearch = lastSearchValue.current;
+    const isSearchChanged = searchTerm.trim() !== prevSearch;
+    const isPaste =
+      isSearchChanged && searchTerm.trim().length - prevSearch.length > 1;
+
+    lastSearchValue.current = searchTerm.trim();
+
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+
+    if (isSearchChanged) {
+      if (isPaste || !searchTerm.trim()) {
+        fetchData(controller.signal);
+      } else {
+        debounceRef.current = setTimeout(
+          () => fetchData(controller.signal),
+          1500
+        );
+      }
+    } else {
+      fetchData(controller.signal);
+    }
+
+    return () => {
+      controller.abort();
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
+  }, [searchTerm, currentPage]);
 
   const handleSearchChange = (e) => {
     const val = e.target.value;
@@ -202,23 +205,22 @@ useEffect(() => {
   };
 
   const handleAdminModeToggle = (branchId) => {
-console.log('branchId:', branchId)
+    console.log("branchId:", branchId);
 
-   console.log('adminModeBranch:', adminModeBranch);
+    console.log("adminModeBranch:", adminModeBranch);
     if (adminModeBranch === branchId) {
       // ✅ turn OFF admin mode
       removeBranchSession();
       setAdminModeBranch(null);
-       navigate("/owner/dashboard", { replace: true }); // no forward to admin
+      navigate("/owner/dashboard", { replace: true }); // no forward to admin
     } else {
       // ✅ turn ON admin mode for this branch
       setBranchSession(branchId);
       setAdminModeBranch(branchId);
-       setTimeout(() => {
-      navigate("/admin/dashboard", { replace: true });
-    }, 850);
-    // navigate("/admin/dashboard", { replace: true }); // Redirect to admin dashboard on enabling admin mode and  no back to owner
-      
+      setTimeout(() => {
+        navigate("/admin/dashboard", { replace: true });
+      }, 850);
+      // navigate("/admin/dashboard", { replace: true }); // Redirect to admin dashboard on enabling admin mode and  no back to owner
     }
   };
 
@@ -285,84 +287,22 @@ console.log('branchId:', branchId)
                   <th className="px-6 py-4">Total Learners</th>
                   <th className="px-6 py-4">Total Instructors</th>
                   <th className="px-6 py-4">Branch Admin</th>
-                    <th className="px-6 py-4">Assign Admin</th> 
+                  <th className="px-6 py-4">Assign Admin</th>
                   <th className="px-6 py-4">Switch Admin Mode</th>
                 </tr>
               </thead>
               <tbody>
-  {branches.length > 0 ? (
-    branches.map((branch, index) => (
-      <tr key={branch._id} className="text-center bg-white border-b">
-        <td className="px-6 py-4">{index + 1 + (currentPage - 1) * limit}</td>
-        <td className="px-6 py-4">{branch.branchName}</td>
-        <td className="px-6 py-4">{branch.totalLearners || 0}</td>
-        <td className="px-6 py-4">{branch.totalInstructors || 0}</td>
-        <td className="px-6 py-4">
-          {branch.branchAdmins && branch.branchAdmins.length > 0
-            ? branch.branchAdmins.map((admin) => admin.fullName).join(", ")
-            : "N/A"}
-        </td>
-
-        {/* ✅ New Assign/Re-Assign button */}
-        <td className="px-0 py-4">
-          <button
-            onClick={() => setSelectedBranch(branch)}
-            className="px-3 py-1 text-white bg-blue-500 rounded hover:bg-blue-600"
-          >
-            {branch.branchAdmins && branch.branchAdmins.length > 0
-              ? "Re-Assign"
-              : "Assign"}
-          </button>
-        </td>
-
-        <td className="px-6 py-4">
-          <button
-            onClick={() => handleAdminModeToggle(branch._id)}
-            className="text-2xl focus:outline-none"
-          >
-            {adminModeBranch === branch._id ? (
-              <i className="text-3xl text-blue-600 fa-solid fa-toggle-on"></i>
-            ) : (
-              <i className="text-3xl text-gray-400 fa-solid fa-toggle-off"></i>
-            )}
-          </button>
-        </td>
-      </tr>
-    ))
-  ) : (
-    <tr>
-      <td colSpan="7" className="py-4 text-center text-red-600">
-        No branches found
-      </td>
-    </tr>
-  )}
-</tbody>
-
-{/* ✅ Modal Render */}
-{selectedBranch && (
-  <AssignAdmin
-    branch={selectedBranch}
-    onClose={(success) => {
-      setSelectedBranch(null);
-      if (success) {
-        // refresh branch list after assigning
-      
-        fetchData(); // ✅ refresh branch list via API
-      }
-    }}
-  />
-)}
-              {/* <tbody>
                 {branches.length > 0 ? (
                   branches.map((branch, index) => (
-                    <tr key={branch._id} className="text-center bg-white border-b">
+                    <tr
+                      key={branch._id}
+                      className="text-center bg-white border-b"
+                    >
                       <td className="px-6 py-4">
                         {index + 1 + (currentPage - 1) * limit}
                       </td>
                       <td className="px-6 py-4">{branch.branchName}</td>
-                      <td className="px-6 py-4">
-                        {branch.totalLearners || 0}
-                      </td>
+                      <td className="px-6 py-4">{branch.totalLearners || 0}</td>
                       <td className="px-6 py-4">
                         {branch.totalInstructors || 0}
                       </td>
@@ -373,9 +313,22 @@ console.log('branchId:', branchId)
                               .join(", ")
                           : "N/A"}
                       </td>
+
+                      {/* ✅ New Assign/Re-Assign button */}
+                      <td className="px-0 py-4">
+                        <button
+                          onClick={() => setSelectedBranch(branch)}
+                          className="px-3 py-1 text-white bg-blue-500 rounded hover:bg-blue-600"
+                        >
+                          {branch.branchAdmins && branch.branchAdmins.length > 0
+                            ? "Re-Assign"
+                            : "Assign"}
+                        </button>
+                      </td>
+
                       <td className="px-6 py-4">
                         <button
-                          onClick={() => handleAdminModeToggle(branch._id)}
+                          onClick={() => setConfirmModal(branch._id)}
                           className="text-2xl focus:outline-none"
                         >
                           {adminModeBranch === branch._id ? (
@@ -389,17 +342,74 @@ console.log('branchId:', branchId)
                   ))
                 ) : (
                   <tr>
-                    <td
-                      colSpan="6"
-                      className="py-4 text-center text-red-600"
-                    >
+                    <td colSpan="7" className="py-4 text-center text-red-600">
                       No branches found
                     </td>
                   </tr>
                 )}
-              </tbody> */}
+              </tbody>
+
+              {/* ✅ Modal Render */}
+              {selectedBranch && (
+                <AssignAdmin
+                  branch={selectedBranch}
+                  onClose={(success) => {
+                    setSelectedBranch(null);
+                    if (success) {
+                      // refresh branch list after assigning
+
+                      fetchData(); // ✅ refresh branch list via API
+                    }
+                  }}
+                />
+              )}
             </table>
           </div>
+
+          {confirmModal && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+              <div className="w-full max-w-md p-6 bg-white rounded-lg shadow-lg dark:bg-gray-700">
+                <div className="text-center">
+                  <svg
+                    className="w-12 h-12 mx-auto mb-4 text-gray-400 dark:text-gray-200"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      stroke="currentColor"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M10 11V6m0 8h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+                    />
+                  </svg>
+                  <h3 className="mb-5 text-lg font-normal text-gray-800 dark:text-gray-400">
+                    {adminModeBranch === confirmModal
+                      ? "Are you sure you want to switch OFF Admin Mode?"
+                      : "Are you sure you want to switch ON Admin Mode for this branch?"}
+                  </h3>
+                  <div className="flex justify-center gap-4">
+                    <button
+                      onClick={() => setConfirmModal(null)}
+                      className="w-20 py-2.5 px-5 text-sm font-medium text-gray-700 bg-white rounded-lg border border-blue-300 hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-400 dark:border-blue-600 dark:hover:text-white dark:hover:bg-gray-700"
+                    >
+                      No
+                    </button>
+                    <button
+                      onClick={() => {
+                        handleAdminModeToggle(confirmModal);
+                        setConfirmModal(null);
+                      }}
+                      className="text-white bg-blue-600 hover:bg-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 w-20"
+                    >
+                      Yes
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
 
           {branches.length > 0 && (
             <Pagination

@@ -6,6 +6,7 @@ import { URL as BURL } from "../../App";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useRole } from "../../Components/AuthContext/AuthContext.jsx";
+import branchHeaders from "../../Components/utils/headers.jsx";
 
 const schema = yup.object().shape({
   fullName: yup.string().required("Full Name is required."),
@@ -103,9 +104,7 @@ const onSubmit = async (data) => {
 
   try {
     setLoading(true)
-    await axios.post(`${BURL}/api/v3/learner/create-Learner`, formData, {
-      withCredentials: true,
-    });
+    await axios.post(`${BURL}/api/v2/learner/create-Learner`, formData, branchHeaders());
 
     // ✅ Clear form and files after success
     reset();

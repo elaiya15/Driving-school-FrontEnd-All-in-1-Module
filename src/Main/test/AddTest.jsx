@@ -7,6 +7,7 @@ import { useRole } from "../../Components/AuthContext/AuthContext";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
 import { useNavigate } from "react-router-dom";
+import branchHeaders from "../../Components/utils/headers.jsx";
 
 const AddTest = () => {
   const { clearAuthState } = useRole();
@@ -66,9 +67,7 @@ useEffect(() => {
 
   const fetchLearners = async () => {
     try {
-      const response = await axios.get(`${URL}/api/user/learners`, {
-        withCredentials: true,
-      });
+      const response = await axios.get(`${URL}/api/v2/learner`, branchHeaders());
       setLearners(response.data.learners);
     } catch (error) {
       handleError(error);
@@ -101,9 +100,7 @@ useEffect(() => {
   const onSubmit = async (data) => {
     try {
       setDataLoading(true);
-      await axios.post(`${URL}/api/tests`, data, {
-        withCredentials: true,
-      });
+      await axios.post(`${URL}/api/v2/tests`, data, branchHeaders());
 
       setToastOpen(true);
       setTimeout(() => {

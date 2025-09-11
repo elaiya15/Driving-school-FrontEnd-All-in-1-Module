@@ -5,7 +5,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import Pagination from "../../Components/Pagination";
 import { extractDriveFileId } from "../../Components/ImageProxyRouterFunction/funtion.js";
 import { useRole } from "../../Components/AuthContext/AuthContext";
-
+import branchHeaders from "../../Components/utils/headers.jsx";
 
 
 
@@ -94,8 +94,8 @@ const [error, setError] = useState(null);
         if (currentPage) params.page = currentPage;
         if (limit) params.limit = limit;
 
-        const response = await axios.get(`${URL}/api/staff`, {
-          withCredentials: true,
+        const response = await axios.get(`${URL}/api/v2/staff`, {
+         ...branchHeaders(),
           params,
           signal: controller.signal,
         });

@@ -5,6 +5,7 @@ import moment from "moment";
 import { URL } from "../../App";
 import Pagination from "../../Components/Pagination";
 import { useRole } from "../../Components/AuthContext/AuthContext";
+import branchHeaders from "../../Components/utils/headers";
 // ✅ Custom toast component
 const Toast = ({ message }) => (
   <div className="fixed top-5 right-5 z-50 w-[300px] max-w-xs p-4 text-white bg-red-600 rounded-md shadow-md animate-fade-in-down">
@@ -68,8 +69,8 @@ const LearnerSingleTest = () => {
       setLoading(true);
       setError(null);
 
-      const response = await axios.get(`${URL}/api/tests/${user.user_id}`, {
-        withCredentials: true,
+      const response = await axios.get(`${URL}/api/v2/tests/${user.user_id}`, {
+       ...branchHeaders(),
         signal: controllerRef.current.signal,
         params: {
           page: currentPage,

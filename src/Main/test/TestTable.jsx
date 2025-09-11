@@ -6,7 +6,7 @@ import moment from "moment";
 import Pagination from "../../Components/Pagination";
 import { extractDriveFileId } from "../../Components/ImageProxyRouterFunction/funtion.js";
 import { useRole } from "../../Components/AuthContext/AuthContext";
-
+import branchHeaders from "../../Components/utils/headers.jsx";
 const TestTable = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -63,10 +63,11 @@ const TestTable = () => {
         page: currentPage,
         limit,
       };
-      const response = await axios.get(`${URL}/api/tests`, {
+      const response = await axios.get(`${URL}/api/v2/tests`, {
+        ...branchHeaders(),
         params,
         signal: controller.signal,
-        withCredentials: true,
+        
       });
       setTests(response.data.tests || []);
 
@@ -365,14 +366,14 @@ if (!value) {
                     <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                       {(currentPage - 1) * limit + index + 1}
                     </td>
-                    <td className="sm:px-2  py-4">
+                    <td className="py-4 sm:px-2">
                       <img
                         src={`${URL}/api/image-proxy/${extractDriveFileId(
                           test.learner?.photo
                         )}`}
                         alt={test.learner?.fullName}
                         // className="object-cover w-16 h-16 border-4 border-white rounded-full shadow-md"
-                          className="w-16 h-16 object-cover rounded-full border-4 border-white shadow-md"
+                          className="object-cover w-16 h-16 border-4 border-white rounded-full shadow-md"
 
                       />
                     </td>

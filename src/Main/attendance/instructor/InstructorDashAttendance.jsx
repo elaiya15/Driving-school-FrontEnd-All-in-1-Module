@@ -100,7 +100,7 @@ const InstructorDashAttendance = () => {
 
   return (
     <div className="p-4">
-      <div className="flex flex-row justify-between items-center gap-4 mb-4">
+      <div className="flex flex-row items-center justify-between gap-4 mb-4">
         <h3 className="text-base font-semibold">Attendance History</h3>
         <FaSyncAlt
           className="text-blue-500 cursor-pointer hover:text-blue-600"
@@ -110,7 +110,7 @@ const InstructorDashAttendance = () => {
         />
       </div>
 
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4 w-full">
+      <div className="flex flex-col justify-between w-full gap-4 mb-4 md:flex-row md:items-center">
         <div className="relative w-full md:w-1/3">
           <svg
             className="absolute left-3 top-2.5 text-gray-400 w-5 h-5"
@@ -128,14 +128,14 @@ const InstructorDashAttendance = () => {
           </svg>
           <input
             type="text"
-            className="w-full border border-gray-300 text-gray-900 text-sm rounded-lg pl-10 py-2"
+            className="w-full py-2 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg"
             placeholder="Search..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
           {searchTerm && (
             <button
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-blue-500"
+              className="absolute text-gray-500 transform -translate-y-1/2 right-3 top-1/2 hover:text-blue-500"
               onClick={() => setSearchTerm("")}
             >
               <svg
@@ -155,11 +155,11 @@ const InstructorDashAttendance = () => {
           )}
         </div>
 
-        <div className="flex flex-col sm:flex-row flex-wrap gap-4 w-full md:w-auto justify-end">
+        <div className="flex flex-col flex-wrap justify-end w-full gap-4 sm:flex-row md:w-auto">
           <div className="relative w-full sm:w-36">
             <select
               id="floating_status"
-              className="peer block w-full text-sm text-gray-900 bg-transparent rounded-lg border border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 px-3 py-2"
+              className="block w-full px-3 py-2 text-sm text-gray-900 bg-transparent border border-gray-300 rounded-lg appearance-none peer focus:outline-none focus:ring-0 focus:border-blue-600"
               value={status}
               onChange={(e) => setStatus(e.target.value)}
             >
@@ -183,7 +183,7 @@ const InstructorDashAttendance = () => {
               value={fromDate}
               onChange={(e) => setFromDate(e.target.value)}
               onFocus={(event) => (event.nativeEvent.target.defaultValue = "")}
-              className="peer border border-gray-300 text-gray-900 text-sm rounded-lg px-3 py-2"
+              className="px-3 py-2 text-sm text-gray-900 border border-gray-300 rounded-lg peer"
               placeholder=" "
             />
             <label className="absolute left-3 top-[-8px] text-xs bg-white px-1 text-gray-500">
@@ -197,7 +197,7 @@ const InstructorDashAttendance = () => {
               value={toDate}
               onChange={(e) => setToDate(e.target.value)}
               onFocus={(event) => (event.nativeEvent.target.defaultValue = "")}
-              className="peer border border-gray-300 text-gray-900 text-sm rounded-lg px-3 py-2"
+              className="px-3 py-2 text-sm text-gray-900 border border-gray-300 rounded-lg peer"
               placeholder=" "
             />
             <label className="absolute left-3 top-[-8px] text-xs bg-white px-1 text-gray-500">
@@ -207,14 +207,14 @@ const InstructorDashAttendance = () => {
         </div>
       </div>
       {loading ? (
-        <div className="text-center py-5 text-blue-600 font-semibold text-lg">
+        <div className="py-5 text-lg font-semibold text-center text-blue-600">
           Loading...
         </div>
       ) : (
         <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
           {records.length > 0 ? (
             <table className="w-full text-sm text-gray-500">
-              <thead className="text-sm text-gray-700 text-left bg-gray-50">
+              <thead className="text-sm text-left text-gray-700 bg-gray-50">
                 <tr>
                   <th className="px-6 py-4">S.No</th>
                   <th className="px-6 py-4">Date</th>
@@ -274,7 +274,7 @@ const InstructorDashAttendance = () => {
               </tbody>
             </table>
           ) : (
-            <div className="text-center text-red-600 py-6">
+            <div className="py-6 text-center text-red-600">
               No attendance records found
             </div>
           )}

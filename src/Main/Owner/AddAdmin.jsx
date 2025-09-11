@@ -7,10 +7,10 @@ import axios from "axios";
 import { URL } from "../../App";
 import { useRole } from "../../Components/AuthContext/AuthContext";
 import branchHeaders from "../../Components/utils/headers";
-
 const schema = yup.object().shape({
   fullName: yup.string().required("Full Name is required."),
   fathersName: yup.string().required("Father's Name is required."),
+  email: yup.string().required("email is required."),
   mobileNumber: yup
     .string()
     .required("Mobile Number is required.")
@@ -19,12 +19,12 @@ const schema = yup.object().shape({
   gender: yup.string().required("Gender is required."),
   bloodGroup: yup.string().required("Blood Group is required."),
   address: yup.string().required("Address is required."),
-  // username: yup.string().required("Username is required."),
-  // password: yup.string().required("Password is required."),
+  username: yup.string().required("Username is required."),
+  password: yup.string().required("Password is required."),
   photo: yup.mixed().required("Photo is required."),
 });
 
-const NewStaffr = () => {
+const NewInsRegister = () => {
   const navigate = useNavigate();
   const { clearAuthState } = useRole();
   const [photo, setPhoto] = useState(null);
@@ -48,11 +48,11 @@ const NewStaffr = () => {
     for (let key in data) {
       formData.append(key, data[key]);
     }
-    // formData.append("role", "Instructor");
+    // formData.append("role", "Admin");
 
     setLoading(true);
     try {
-      await axios.post(`${URL}/api/v2/staff/create`, formData, branchHeaders());
+      await axios.post(`${URL}/api/v1/admins/create`, formData,branchHeaders());
       setToastOpen(true);
       setTimeout(() => {
         setToastOpen(false);
@@ -112,13 +112,14 @@ const NewStaffr = () => {
   };
   return (
     <div className="p-4">
-      <h2 className="sm:text-3xl md:text-2xl font-semibold mb-4">Staff Registration</h2>
+      <h2 className="sm:text-3xl md:text-2xl font-semibold mb-4">Admin Registration</h2>
       <h5 className="sm:text-2xl md:text-xl font-normal mb-4">Personal Details</h5>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 gap-y-10">
           {[
             { id: 'fullName', label: 'Full Name' },
             { id: 'fathersName', label: "Father's Name" },
+            { id: 'email', label: "Email" },
             { id: 'mobileNumber', label: 'Mobile Number', maxLength: 10 },
             { id: 'dateOfBirth', label: 'Date of Birth', type: 'date' },
           ].map(({ id, label, maxLength, type = 'text' }) => (
@@ -218,7 +219,7 @@ const NewStaffr = () => {
           </div>
         </div>
 
-        {/* <div className="mt-8">
+        <div className="mt-8">
           <h5 className="sm:text-2xl md:text-xl font-normal mb-4">Login Details</h5>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 gap-y-10">
             {[{ id: 'username', label: 'Username' }, { id: 'password', label: 'Password', type: 'password' }].map(({ id, label, type = 'text' }) => (
@@ -240,7 +241,7 @@ const NewStaffr = () => {
               </div>
             ))}
           </div>
-        </div> */}
+        </div>
 
         <div className="flex flex-col md:flex-row md:justify-end space-y-4 md:space-y-0 md:space-x-4 mt-6">
           <button type="button" onClick={() => navigate(-1)} disabled={loading} className={`bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-800 ${loading ? "opacity-50 cursor-not-allowed" : ""}`}>Back</button>
@@ -252,11 +253,11 @@ const NewStaffr = () => {
 
       {toastOpen && (
         <div className="fixed top-20 right-5 flex items-center justify-center w-full max-w-xs p-4 text-white bg-blue-700 rounded-md shadow-md">
-          Staff created successfully
+          Admin created successfully
         </div>
       )}
     </div>
   );
 };
 
-export default NewStaffr;
+export default NewInsRegister;

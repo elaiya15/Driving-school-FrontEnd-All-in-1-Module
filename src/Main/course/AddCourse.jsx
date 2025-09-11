@@ -6,6 +6,7 @@ import * as yup from "yup";
 import axios from "axios";
 import { URL } from "../../App";
 import { useRole } from "../../Components/AuthContext/AuthContext";
+import branchHeaders from "../../Components/utils/headers";
 
 const schema = yup.object().shape({
   courseName: yup
@@ -60,9 +61,7 @@ const [errorMessages, setErrorMessages] = useState([]);
   setErrorMessages([]); // Clear old errors
 
   try {
-    await axios.post(`${URL}/api/courses`, data, {
-      withCredentials: true,
-    });
+    await axios.post(`${URL}/api/v2/courses`, data,branchHeaders());
 
     setToastOpen(true); // your success toast logic
     setTimeout(() => {

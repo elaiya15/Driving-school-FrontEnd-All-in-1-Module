@@ -4,6 +4,8 @@ import axios from "axios";
 import { URL } from "../../App";
 import Pagination from "../../Components/Pagination";
 import { useRole } from "../../Components/AuthContext/AuthContext";
+import branchHeaders from "../../Components/utils/headers";
+
 const Toast = ({ message }) => (
   <div className="fixed top-5 right-5 z-50 w-[300px] max-w-xs p-4 text-white bg-red-600 rounded-md shadow-md animate-fade-in-down">
   {message}
@@ -81,8 +83,8 @@ const [errorMsg, setErrorMsg] = useState("");
         queryParams.set("page", query.page);
         queryParams.set("limit", query.limit);
 
-        const response = await axios.get(`${URL}/api/courses?${queryParams.toString()}`, {
-          withCredentials: true,
+        const response = await axios.get(`${URL}/api/v2/courses?${queryParams.toString()}`, {
+         ...branchHeaders(), 
           signal: controller.signal,
         });
 
@@ -101,7 +103,7 @@ const [errorMsg, setErrorMsg] = useState("");
           ) {
             setErrorMsg("Credential Invalid or Expired Please Login Again");
             return setTimeout(() => {
-              clearAuthState();
+            //   clearAuthState();
               setErrorMsg("")
             }, 2000);
           }
@@ -177,17 +179,17 @@ const [errorMsg, setErrorMsg] = useState("");
     <div className="p-4">
               {errorMsg && <Toast message={errorMsg} />}
 
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
+      <div className="flex flex-col gap-4 mb-4 md:flex-row md:items-center md:justify-between">
         <h3 className="text-xl font-bold text-center md:text-left">Course Details</h3>
         <button
           onClick={() => navigate("/admin/Course/new")}
-          className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition w-full md:w-auto"
+          className="w-full px-4 py-2 text-white transition bg-blue-500 rounded-md hover:bg-blue-600 md:w-auto"
         >
           Add Course
         </button>
       </div>
 
-      <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-4">
+      <div className="flex flex-col gap-4 mb-4 md:flex-row md:justify-between md:items-center">
         <div className="relative w-full md:w-1/3">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -205,7 +207,7 @@ const [errorMsg, setErrorMsg] = useState("");
           </svg>
           <input
             type="search"
-            className="w-full border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 pl-10 py-2"
+            className="w-full py-2 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
             placeholder="Search Course"
             value={searchTerm}
             onChange={handleSearchChange}
@@ -215,13 +217,13 @@ const [errorMsg, setErrorMsg] = useState("");
       </div>
 
       {loading ? (
-        <div className="text-center py-5 text-blue-600 font-semibold text-lg">Loading...</div>
+        <div className="py-5 text-lg font-semibold text-center text-blue-600">Loading...</div>
       ) : errorMessage ? (
-        <p className="text-red-600 text-center py-5">{errorMessage}</p>
+        <p className="py-5 text-center text-red-600">{errorMessage}</p>
       ) : (
         <div className="overflow-x-auto shadow-md sm:rounded-lg">
           <table className="w-full text-sm text-gray-500">
-            <thead className="text-sm text-gray-700 text-left bg-gray-50">
+            <thead className="text-sm text-left text-gray-700 bg-gray-50">
               <tr>
                 <th className="px-6 py-4">S.No</th>
                 <th className="px-6 py-4">Course</th>
@@ -247,16 +249,16 @@ const [errorMsg, setErrorMsg] = useState("");
                     <td className="px-6 py-4">
                       <button
                         onClick={() => navigate(`/admin/Course/${course._id}/edit`)}
-                        className="bg-gray-100 hover:bg-gray-200 px-2 py-1 rounded"
+                        className="px-2 py-1 bg-gray-100 rounded hover:bg-gray-200"
                       >
-                        <i className="fa-solid fa-pen-to-square text-blue-600"></i>
+                        <i className="text-blue-600 fa-solid fa-pen-to-square"></i>
                       </button>
                     </td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan="7" className="text-center text-red-600 py-4">
+                  <td colSpan="7" className="py-4 text-center text-red-600">
                     Course not found
                   </td>
                 </tr>

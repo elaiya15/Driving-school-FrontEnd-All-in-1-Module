@@ -6,6 +6,7 @@ import Pagination from "../../Components/Pagination";
 import { extractDriveFileId } from "../../Components/ImageProxyRouterFunction/funtion";
 import { useRole } from "../../Components/AuthContext/AuthContext";
 import { URL } from "../../App";
+import branchHeaders from "../../Components/utils/headers";
 
 // ✅ Custom toast component
 const Toast = ({ message }) => (
@@ -67,7 +68,8 @@ const InstructorLearnerPayments = () => {
 
     setLoading(true);
     try {
-      const { data } = await axios.get(`${URL}/api/payments/createdBy/${instructorId}`, {
+      const { data } = await axios.get(`${URL}/api/v2/payments/createdBy/${instructorId}`, {
+        ...branchHeaders(),
         params: {
           search: searchTerm || undefined,
           paymentMethod: paymentMethod || undefined,
@@ -76,7 +78,7 @@ const InstructorLearnerPayments = () => {
           page: currentPage,
           limit: itemsPerPage,
         },
-        withCredentials: true,
+        
         signal,
       });
 

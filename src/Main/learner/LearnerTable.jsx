@@ -7,6 +7,7 @@ import moment from "moment";
 import { URL } from "../../App";
 import { extractDriveFileId } from "../../Components/ImageProxyRouterFunction/funtion.js";
 import { useRole } from "../../Components/AuthContext/AuthContext";
+import branchHeaders from "../../Components/utils/headers.jsx";
 
 
 // ✅ Custom toast component
@@ -134,8 +135,8 @@ const LearnerTable = () => {
         }
 
         const response = await axios.get(`${URL}/api/v3/learner`, {
-          params,
-          withCredentials: true,
+          ...branchHeaders(),
+            params,
           signal: controller.signal,
         });
 

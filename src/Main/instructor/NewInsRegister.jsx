@@ -6,6 +6,7 @@ import * as yup from "yup";
 import axios from "axios";
 import { URL } from "../../App";
 import { useRole } from "../../Components/AuthContext/AuthContext";
+import branchHeaders from "../../Components/utils/headers";
 
 const schema = yup.object().shape({
   fullName: yup.string().required("Full Name is required."),
@@ -47,13 +48,11 @@ const NewInsRegister = () => {
     for (let key in data) {
       formData.append(key, data[key]);
     }
-    formData.append("role", "Instructor");
+    // formData.append("role", "Instructor");
 
     setLoading(true);
     try {
-      await axios.post(`${URL}/api/admin/create-Instructor`, formData, {
-        withCredentials: true,
-      });
+      await axios.post(`${URL}/api/v2/instructor/create-Instructor`, formData, branchHeaders() );
       setToastOpen(true);
       setTimeout(() => {
         setToastOpen(false);
@@ -83,7 +82,7 @@ const NewInsRegister = () => {
           const toast = document.createElement("div");
           toast.textContent = msg;
           toast.className =
-            "fixed top-20 right-5 z-50 bg-red-600 text-white px-4 py-2 rounded-md shadow-md";
+            "fixed z-50 px-4 py-2 text-white bg-red-600 rounded-md shadow-md top-20 right-5";
           document.body.appendChild(toast);
           setTimeout(() => toast.remove(), 4000);
         }, i * 100);
@@ -113,10 +112,10 @@ const NewInsRegister = () => {
   };
   return (
     <div className="p-4">
-      <h2 className="sm:text-3xl md:text-2xl font-semibold mb-4">Instructor Registration</h2>
-      <h5 className="sm:text-2xl md:text-xl font-normal mb-4">Personal Details</h5>
+      <h2 className="mb-4 font-semibold sm:text-3xl md:text-2xl">Instructor Registration</h2>
+      <h5 className="mb-4 font-normal sm:text-2xl md:text-xl">Personal Details</h5>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 gap-y-10">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 gap-y-10">
           {[
             { id: 'fullName', label: 'Full Name' },
             { id: 'fathersName', label: "Father's Name" },
@@ -138,7 +137,7 @@ const NewInsRegister = () => {
               >
                 {label}
               </label>
-              {errors[id] && <p className="text-red-500 text-sm mt-1">{errors[id].message}</p>}
+              {errors[id] && <p className="mt-1 text-sm text-red-500">{errors[id].message}</p>}
             </div>
           ))}
 
@@ -166,13 +165,13 @@ const NewInsRegister = () => {
               >
                 {label}
               </label>
-              {errors[id] && <p className="text-red-500 text-sm mt-1">{errors[id].message}</p>}
+              {errors[id] && <p className="mt-1 text-sm text-red-500">{errors[id].message}</p>}
             </div>
           ))}
         </div>
 
-        <div className="flex flex-col lg:flex-row  my-4 gap-x-5">
-          <div className="relative mt-5 w-full  bg-">
+        <div className="flex flex-col my-4 lg:flex-row gap-x-5">
+          <div className="relative w-full mt-5 bg-">
             <textarea
               id="address"
               {...register('address')}
@@ -185,14 +184,14 @@ const NewInsRegister = () => {
             >
               Address
             </label>
-            {errors.address && <p className="text-red-500 text-sm mt-1">{errors.address.message}</p>}
+            {errors.address && <p className="mt-1 text-sm text-red-500">{errors.address.message}</p>}
           </div>
 
-          <div className="grid grid-cols w-full ">
+          <div className="grid w-full grid-cols ">
             <label className="block text-sm font-medium text-gray-700">Photo</label>
             <label htmlFor="photo" className={`flex items-center justify-center w-full h-36 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer ${!preview ? "dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800" : ""} dark:border-gray-600 dark:hover:border-gray-500 relative overflow-hidden`}>
               {preview ? (
-                <img src={preview} alt="Preview" className="w-full h-full object-contain rounded-lg" />
+                <img src={preview} alt="Preview" className="object-contain w-full h-full rounded-lg" />
               ) : (
                 <div className="flex flex-col items-center justify-center pt-5 pb-6">
                   <svg className="w-8 h-8 mb-4 text-gray-500" fill="none" viewBox="0 0 20 16">
@@ -210,18 +209,18 @@ const NewInsRegister = () => {
               />
             </label>
             {photo && (
-              <div className="mt-2 flex justify-between items-center">
+              <div className="flex items-center justify-between mt-2">
                 <p className="text-sm">{photo.name}</p>
-                <button type="button" onClick={removePhoto} className="text-red-500 text-sm">Remove</button>
+                <button type="button" onClick={removePhoto} className="text-sm text-red-500">Remove</button>
               </div>
             )}
-            {errors.photo && <p className="text-red-500 text-sm mt-1">{errors.photo.message}</p>}
+            {errors.photo && <p className="mt-1 text-sm text-red-500">{errors.photo.message}</p>}
           </div>
         </div>
 
         <div className="mt-8">
-          <h5 className="sm:text-2xl md:text-xl font-normal mb-4">Login Details</h5>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 gap-y-10">
+          <h5 className="mb-4 font-normal sm:text-2xl md:text-xl">Login Details</h5>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 gap-y-10">
             {[{ id: 'username', label: 'Username' }, { id: 'password', label: 'Password', type: 'password' }].map(({ id, label, type = 'text' }) => (
               <div className="relative" key={id}>
                 <input
@@ -237,22 +236,22 @@ const NewInsRegister = () => {
                 >
                   {label}
                 </label>
-                {errors[id] && <p className="text-red-500 text-sm mt-1">{errors[id].message}</p>}
+                {errors[id] && <p className="mt-1 text-sm text-red-500">{errors[id].message}</p>}
               </div>
             ))}
           </div>
         </div>
 
-        <div className="flex flex-col md:flex-row md:justify-end space-y-4 md:space-y-0 md:space-x-4 mt-6">
+        <div className="flex flex-col mt-6 space-y-4 md:flex-row md:justify-end md:space-y-0 md:space-x-4">
           <button type="button" onClick={() => navigate(-1)} disabled={loading} className={`bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-800 ${loading ? "opacity-50 cursor-not-allowed" : ""}`}>Back</button>
-          <button type="submit" disabled={loading} className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-800">
+          <button type="submit" disabled={loading} className="px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-800">
             {loading ? 'Loading...' : 'Submit'}
           </button>
         </div>
       </form>
 
       {toastOpen && (
-        <div className="fixed top-20 right-5 flex items-center justify-center w-full max-w-xs p-4 text-white bg-blue-700 rounded-md shadow-md">
+        <div className="fixed flex items-center justify-center w-full max-w-xs p-4 text-white bg-blue-700 rounded-md shadow-md top-20 right-5">
           Instructor created successfully
         </div>
       )}

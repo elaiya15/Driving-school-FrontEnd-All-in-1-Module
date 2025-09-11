@@ -7,6 +7,7 @@ import axios from "axios";
 import { URL as BURL } from "../../App";
 import { extractDriveFileId } from "../../Components/ImageProxyRouterFunction/funtion.js";
 import { useRole } from "../../Components/AuthContext/AuthContext";
+import branchHeaders from "../../Components/utils/headers.jsx";
 
 const schema = yup.object().shape({
   fullName: yup.string().required("Full Name is required."),
@@ -51,9 +52,7 @@ const StaffEdit = () => {
 
   const fetchInstructor = async () => {
     try {
-      const { data } = await axios.get(`${BURL}/api/admin/staff/${id}`, {
-        withCredentials: true,
-      });
+      const { data } = await axios.get(`${BURL}/api/v2/staff/${id}`, branchHeaders());
 console.log("data",data);
 // console.log("name",data.staff.);
 

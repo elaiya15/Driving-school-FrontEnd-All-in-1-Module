@@ -6,6 +6,7 @@ import moment from "moment";
 import { useRole } from "../../Components/AuthContext/AuthContext";
 import { extractDriveFileId } from "../../Components/ImageProxyRouterFunction/funtion.js";
 import { useLocation } from "react-router-dom";
+import branchHeaders from "../../Components/utils/headers.jsx";
 
 // ✅ Custom toast component
 const Toast = ({ message }) => (
@@ -39,9 +40,7 @@ const LearnerProfile = () => {
           return;
         }
 
-        const { data } = await axios.get(`${URL}/api/user/learner/${profileId}`, {
-          withCredentials: true,
-        });
+        const { data } = await axios.get(`${URL}/api/v3/learner/${profileId}`,branchHeaders());
 
         setLearner(data);
       } catch (error) {

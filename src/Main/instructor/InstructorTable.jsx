@@ -4,7 +4,10 @@ import { URL } from "../../App";
 import { useNavigate, useLocation } from "react-router-dom";
 import Pagination from "../../Components/Pagination";
 import { extractDriveFileId } from "../../Components/ImageProxyRouterFunction/funtion.js";
-import { useRole } from "../../Components/AuthContext/AuthContext"; // adjust path as needed
+import { useRole } from "../../Components/AuthContext/AuthContext"; // adjust 
+import branchHeaders from "../../Components/utils/headers.jsx";
+
+// path as needed
 // ✅ Custom toast component
 const Toast = ({ message }) => (
   <div className="fixed top-5 right-5 z-50 w-[300px] max-w-xs p-4 text-white bg-red-600 rounded-md shadow-md animate-fade-in-down">
@@ -96,14 +99,14 @@ const [errorMsg, setErrorMsg] = useState("");
       setError(null);
 
       try {
-        const response = await axios.get(`${URL}/api/admin/instructors`, {
-          params: {
+        const response = await axios.get(`${URL}/api/v2/instructor`, {
+          ...branchHeaders(),
+            params: {
             search: searchFromURL,
             gender: genderFromURL,
             page: pageFromURL,
             limit,
           },
-          withCredentials: true,
           signal: controller.signal,
         });
 

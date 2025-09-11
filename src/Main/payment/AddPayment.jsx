@@ -7,6 +7,7 @@ import axios from "axios";
 import { URL } from "../../App";
 import { useRole } from "../../Components/AuthContext/AuthContext";
 import { extractDriveFileId } from "../../Components/ImageProxyRouterFunction/funtion.js";
+import branchHeaders from "../../Components/utils/headers.jsx";
 
 const schema = yup.object().shape({
   learnerId: yup.string().required("Please select a learner."),
@@ -60,7 +61,7 @@ const dropdownRef = useRef(null);
 
   useEffect(() => {
     axios
-      .get(`${URL}/api/user/learners`, { withCredentials: true })
+      .get(`${URL}/api/v2/learner`, branchHeaders())
       .then((res) => setLearners(res.data.learners))
       .catch((err) => console.error("Failed to fetch learners", err));
   }, []);
@@ -68,9 +69,7 @@ const dropdownRef = useRef(null);
   const onSubmit = async (data) => {
     setLoading(true);
     try {
-      await axios.post(`${URL}/api/payments`, data, {
-        withCredentials: true,
-      });
+      await axios.post(`${URL}/api/v2/payments`, data, branchHeaders());
 
       setSuccessToast(true);
       setTimeout(() => {
