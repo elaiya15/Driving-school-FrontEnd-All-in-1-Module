@@ -5,6 +5,7 @@ import axios from "axios";
 import Pagination from "../../Components/Pagination";
 import { FaSyncAlt } from "react-icons/fa";
 import { useRole } from "../../Components/AuthContext/AuthContext"; // adjust path as needed
+import branchHeaders from "../../Components/utils/headers";
 const SingleCourseAssign = () => {
     const {role, user,setUser,setRole,clearAuthState} =  useRole();
 
@@ -36,9 +37,9 @@ const SingleCourseAssign = () => {
         });
 
         const response = await axios.get(
-          `${URL}/api/course-assigned/${id}?${queryParams}`,
+          `${URL}/api/v2/course-assigned/${id}?${queryParams}`,
           {
-                                   withCredentials: true,
+                                   ...branchHeaders(),
 
             signal: controller.signal,
           }
@@ -92,7 +93,7 @@ const SingleCourseAssign = () => {
 
   return (
     <>
-      <div className="   p-4">
+      <div className="p-4 ">
         <div className="flex flex-row items-center justify-between gap-4 mb-4">
           <h3 className="text-base font-semibold">Course History</h3>
           <FaSyncAlt

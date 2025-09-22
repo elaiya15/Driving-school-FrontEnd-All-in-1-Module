@@ -6,6 +6,7 @@ import Pagination from "../../../Components/Pagination";
 import { extractDriveFileId } from "../../../Components/ImageProxyRouterFunction/funtion.js";
 import { useRole } from "../../../Components/AuthContext/AuthContext";
 import { URL } from "../../../App";
+import branchHeaders from "../../../Components/utils/headers.jsx";
 
 const LearnerAttTable = () => {
   const navigate = useNavigate();
@@ -172,9 +173,9 @@ useEffect(() => {
         ...(date && { date: date.trim() }),
       };
 
-      const res = await axios.get(`${URL}/api/learner-attendance`, {
+      const res = await axios.get(`${URL}/api/v2/learner-attendance`, {
+        ...branchHeaders(),
         params,
-        withCredentials: true,
         signal: controller.signal,
       });
 

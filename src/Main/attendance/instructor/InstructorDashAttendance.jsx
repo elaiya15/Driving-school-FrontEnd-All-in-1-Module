@@ -7,6 +7,7 @@ import moment from "moment";
 import { FaSyncAlt } from "react-icons/fa";
 import { jwtDecode } from "jwt-decode";
 import { useRole } from "../../../Components/AuthContext/AuthContext"; // adjust path as needed
+import branchHeaders from "../../../Components/utils/headers";
 
 const InstructorDashAttendance = () => {
   const navigate = useNavigate();
@@ -45,8 +46,9 @@ const InstructorDashAttendance = () => {
         }
 
         const response = await axios.get(
-          `${URL}/api/instructor-attendance/${InstructorId}`,
+          `${URL}/api/v2/instructor-attendance/${InstructorId}`,
           {
+            ...branchHeaders(),
             params: {
               page: currentPage,
               limit: itemsPerPage,
@@ -55,7 +57,7 @@ const InstructorDashAttendance = () => {
               fromdate: formatDate(fromDate),
               todate: formatDate(toDate),
             },
-                   withCredentials: true,
+                
 
           }
         );

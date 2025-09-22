@@ -6,6 +6,7 @@ import Pagination from "../../../Components/Pagination";
 import moment from "moment";
 import { FaSyncAlt } from "react-icons/fa";
 import { useRole } from "../../../Components/AuthContext/AuthContext"; // adjust path as needed
+import branchHeaders from "../../../Components/utils/headers";
 
 const SingleInstructorAttendance = () => {
   const { id } = useParams();
@@ -54,7 +55,7 @@ const SingleInstructorAttendance = () => {
         const response = await axios.get(
           `${URL}/api/admin/instructor-attendance/${id}?${queryParams}`,
           {
-          withCredentials: true,
+          ...branchHeaders(),
             signal: controller.signal,
           }
         );

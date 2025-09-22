@@ -53,7 +53,7 @@ const SingleTest = () => {
           limit,
         };
 
-        const { data } = await axios.get(`${URL}/api/tests/${id}`, {
+        const { data } = await axios.get(`${URL}/api/v2/tests/${id}`, {
           withCredentials: true,
           params: queryParams,
           signal: controller.signal,
@@ -106,7 +106,7 @@ const SingleTest = () => {
 
   return (
     <div className="p-4">
-      <div className="flex flex-row justify-between items-center gap-4 mb-4">
+      <div className="flex flex-row items-center justify-between gap-4 mb-4">
         <h3 className="text-base font-semibold">Test History</h3>
         <FaSyncAlt
           className="text-blue-500 cursor-pointer hover:text-blue-600"
@@ -116,10 +116,10 @@ const SingleTest = () => {
         />
       </div>
 
-      <div className="flex flex-col md:flex-row font-light text-gray-900  whitespace-nowrap dark:text-white md:items-center justify-between space-y-2 md:space-y-0 mb-4 relative text-sm">
-        <div className="flex w-full md:w-1/3 relative md:mr-4">
+      <div className="relative flex flex-col justify-between mb-4 space-y-2 text-sm font-light text-gray-900 md:flex-row whitespace-nowrap dark:text-white md:items-center md:space-y-0">
+        <div className="relative flex w-full md:w-1/3 md:mr-4">
           <div
-            className="absolute inset-y-0 left-3 flex items-center  pointer-events-none"
+            className="absolute inset-y-0 flex items-center pointer-events-none left-3"
             aria-label="Search Icon"
           >
             <svg
@@ -140,7 +140,7 @@ const SingleTest = () => {
 
           <input
             type="text"
-            className="w-full border border-gray-300 text-gray-900 text-sm rounded-lg pl-10 pr-10 py-2"
+            className="w-full py-2 pl-10 pr-10 text-sm text-gray-900 border border-gray-300 rounded-lg"
             placeholder="Search"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -149,7 +149,7 @@ const SingleTest = () => {
 
           {searchQuery && (
             <button
-              className="absolute inset-y-0 right-3 flex items-center"
+              className="absolute inset-y-0 flex items-center right-3"
               onClick={() => setSearchQuery("")}
               aria-label="Clear Search"
             >
@@ -171,11 +171,11 @@ const SingleTest = () => {
           )}
         </div>
 
-        <div className="flex flex-col md:flex-row md:space-x-4 w-full md:w-auto gap-2 mt-2 md:mt-0 md:ml-auto justify-end">
+        <div className="flex flex-col justify-end w-full gap-2 mt-2 md:flex-row md:space-x-4 md:w-auto md:mt-0 md:ml-auto">
           <div className="relative w-full sm:w-36">
             <select
               id="floating_result"
-              className="peer block w-full text-sm text-gray-900 bg-transparent rounded-lg border border-gray-300 appearance-none focus:outline-none focus:ring-0 focus:border-blue-600 px-3 py-2"
+              className="block w-full px-3 py-2 text-sm text-gray-900 bg-transparent border border-gray-300 rounded-lg appearance-none peer focus:outline-none focus:ring-0 focus:border-blue-600"
               value={result}
               onChange={(e) => setResult(e.target.value)}
             >
@@ -199,7 +199,7 @@ const SingleTest = () => {
               value={fromDate}
               onChange={(e) => setFromDate(e.target.value)}
               onFocus={(event) => (event.nativeEvent.target.defaultValue = "")}
-              className="peer border border-gray-300 text-gray-900 text-sm rounded-lg px-3 py-2"
+              className="px-3 py-2 text-sm text-gray-900 border border-gray-300 rounded-lg peer"
             />
             <label className="absolute left-3 top-[-8px] text-xs bg-white px-1 text-gray-500">
               From
@@ -211,7 +211,7 @@ const SingleTest = () => {
               value={toDate}
               onChange={(e) => setToDate(e.target.value)}
               onFocus={(event) => (event.nativeEvent.target.defaultValue = "")}
-              className="peer border border-gray-300 text-gray-900 text-sm rounded-lg px-3 py-2"
+              className="px-3 py-2 text-sm text-gray-900 border border-gray-300 rounded-lg peer"
             />
             <label className="absolute left-3 top-[-8px] text-xs bg-white px-1 text-gray-500">
               To
@@ -220,13 +220,13 @@ const SingleTest = () => {
         </div>
       </div>
       {loading ? (
-        <div className="text-center py-5 text-blue-600 font-semibold text-lg">
+        <div className="py-5 text-lg font-semibold text-center text-blue-600">
           Loading...
         </div>
       ) : (
         <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
           <table className="w-full text-sm text-gray-500">
-            <thead className="text-sm text-gray-700 text-left bg-gray-50">
+            <thead className="text-sm text-left text-gray-700 bg-gray-50">
               <tr className="">
                 <th className="px-4 py-2">S.No</th>
                 <th className="px-4 py-2">Test Type</th>
@@ -240,7 +240,7 @@ const SingleTest = () => {
                 <tr>
                   <td
                     colSpan="5"
-                    className="text-center text-red-600 py-6 bg-white"
+                    className="py-6 text-center text-red-600 bg-white"
                   >
                     Tests not found
                   </td>
@@ -249,7 +249,7 @@ const SingleTest = () => {
                 tests.map((test, index) => (
                   <tr
                     key={test._id}
-                    className="bg-white text-left border-b dark:bg-gray-800 dark:border-gray-700"
+                    className="text-left bg-white border-b dark:bg-gray-800 dark:border-gray-700"
                   >
                     <td className="px-6 py-4">
                       {(currentPage - 1) * limit + index + 1}
@@ -278,9 +278,9 @@ const SingleTest = () => {
                             state: { test },
                           })
                         }
-                        className="bg-gray-100 hover:bg-gray-200 px-2 py-1 rounded"
+                        className="px-2 py-1 bg-gray-100 rounded hover:bg-gray-200"
                       >
-                        <i className="fa-solid fa-pen-to-square text-blue-600"></i>
+                        <i className="text-blue-600 fa-solid fa-pen-to-square"></i>
                       </button>
                     </td>
                   </tr>

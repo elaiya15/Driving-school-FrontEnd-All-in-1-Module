@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useLocation, useNavigate, Link } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Pagination from "../../Components/Pagination";
 import { useRole } from "../../Components/AuthContext/AuthContext";
@@ -117,51 +117,6 @@ const BranchTable = () => {
   //   }, [searchTerm, currentPage]);
 
   // 🔹 define fetchData outside useEffect so it can be reused
-  //   const fetchData = async (controllerSignal) => {
-  //     setLoading(true);
-  //     setError(null);
-
-  //     try {
-  //       const params = {
-  //         page: currentPage,
-  //         limit,
-  //         ...(searchTerm.trim() && { search: searchTerm.trim() }),
-  //       };
-
-  //       if (!user || !user.organizationId) {
-  //         throw new Error("User or organization ID is not available");
-  //       }
-
-  //       const res = await axios.get(
-  //         `${URL}/api/v1/branches/organization_branches/${user.organizationId}`,
-  //         {
-  //           params,
-  //           withCredentials: true,
-  //           signal: controllerSignal,
-  //         }
-  //       );
-
-  //       setBranches(res.data || []);
-  //       setTotalPages(res.data.totalPages || 1);
-  //     } catch (err) {
-  //       if (!axios.isCancel(err)) {
-  //         setError(err?.response?.data?.message || err.message);
-  //         setTimeout(() => setError(null), 4000);
-
-  //         if (
-  //           err.response &&
-  //           (err.response.status === 401 ||
-  //             err.response.data.message ===
-  //               "Credential Invalid or Expired Please Login Again")
-  //         ) {
-  //           setTimeout(() => clearAuthState(), 2000);
-  //         }
-  //       }
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-
   const fetchData = async (controllerSignal) => {
     setLoading(true);
     setError(null);
@@ -186,9 +141,10 @@ const BranchTable = () => {
         }
       );
 
-      // ✅ use correct structure
-      setBranches(res.data.branches || []);
-      setTotalPages(res.data.pagination?.totalPages || 1);
+
+      
+      setBranches(res.data || []);
+      setTotalPages(res.data.totalPages || 1);
     } catch (err) {
       if (!axios.isCancel(err)) {
         setError(err?.response?.data?.message || err.message);
@@ -335,8 +291,6 @@ const BranchTable = () => {
                   <th className="px-6 py-4">Branch Admin</th>
                   <th className="px-6 py-4">Assign Admin</th>
                   <th className="px-6 py-4">Switch Admin Mode</th>
-                <th className="px-6 py-4">Actions</th>
-
                 </tr>
               </thead>
               <tbody>
@@ -356,20 +310,11 @@ const BranchTable = () => {
                       </td>
                       <td className="px-6 py-4">
                         {branch.branchAdmins && branch.branchAdmins.length > 0
-                          ? branch.branchAdmins.map((admin, index) => (
-                              <span key={admin._id} >
-                                <Link
-                                  to={`/owner/branch-admin/${branch._id}/${admin._id}/view`}
-                                  className="text-blue-600 hover:underline"
-                                >
-                                  {admin.fullName}
-                                </Link>
-                                {index < branch.branchAdmins.length - 1 && ", "}
-                              </span>
-                            ))
+                          ? branch.branchAdmins
+                              .map((admin) => admin.fullName)
+                              .join(", ")
                           : "N/A"}
                       </td>
-                   
 
                       {/* ✅ New Assign/Re-Assign button */}
                       <td className="px-0 py-4">
@@ -395,30 +340,6 @@ const BranchTable = () => {
                           )}
                         </button>
                       </td>
-                      <td className="px-6 py-4">
-                      <div className="flex items-center gap-2">
-                        <button
-                          onClick={() =>
-                            navigate(
-                              `/owner/branches/${branch._id || "unassigned"}/view`
-                            )
-                          }
-                          className="px-2 py-1 bg-gray-100 rounded hover:bg-gray-200"
-                        >
-                          <i className="text-blue-600 fa-solid fa-eye"></i>
-                        </button>
-                        <button
-                          onClick={() =>
-                            navigate(
-                              `/owner/branches/${branch._id || "unassigned"}/edit`
-                            )
-                          }
-                          className="px-2 py-1 bg-gray-100 rounded hover:bg-gray-200"
-                        >
-                          <i className="text-blue-600 fa-solid fa-pen-to-square"></i>
-                        </button>
-                      </div>
-                    </td>
                     </tr>
                   ))
                 ) : (

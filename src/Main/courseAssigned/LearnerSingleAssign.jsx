@@ -4,6 +4,8 @@ import axios from "axios";
 import { URL } from "../../App";
 import Pagination from "../../Components/Pagination";
 import { useRole } from "../../Components/AuthContext/AuthContext";
+import branchHeaders from "../../Components/utils/headers";
+
 // ✅ Custom toast component
 const Toast = ({ message }) => (
   <div className="fixed top-5 right-5 z-50 w-[300px] max-w-xs p-4 text-white bg-red-600 rounded-md shadow-md animate-fade-in-down">
@@ -74,8 +76,8 @@ const LearnerSingleAssign = () => {
     try {
       setLoading(true);
       const response = await axios.get(
-        `${URL}/api/course-assigned/${user.user_id}?${queryParams}`,
-        { withCredentials: true, signal: controller.signal }
+        `${URL}/api/v2/course-assigned/${user.user_id}?${queryParams}`,
+        {  ...branchHeaders(), signal: controller.signal }
       );
       setAssignments(response.data.assignments || []);
       setTotalPages(response.data.totalPages || 1);

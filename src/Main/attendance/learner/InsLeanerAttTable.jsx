@@ -6,7 +6,10 @@ import Pagination from "../../../Components/Pagination";
 import { extractDriveFileId } from "../../../Components/ImageProxyRouterFunction/funtion.js";
 import { useRole } from "../../../Components/AuthContext/AuthContext";
 import { URL } from "../../../App";
+import branchHeaders from "../../../Components/utils/headers.jsx";
 // ✅ Custom toast component
+
+
 const Toast = ({ message }) => (
   <div className="fixed top-5 right-5 z-50 w-[300px] max-w-xs p-4 text-white bg-red-600 rounded-md shadow-md animate-fade-in-down">
   {message}
@@ -67,9 +70,9 @@ const InsLearnerAttTable = () => {
       if (classType?.trim()) params.classType = classType.trim();
       if (date?.trim()) params.date = date.trim();
 
-      const res = await axios.get(`${URL}/api/learner-attendance/createdBy/${instructorId}`, {
+      const res = await axios.get(`${URL}/api/v2/learner-attendance/createdBy/${instructorId}`, {
+       ...branchHeaders(),
         params,
-        withCredentials: true,
         signal,
       });
 

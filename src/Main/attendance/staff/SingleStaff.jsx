@@ -6,11 +6,12 @@ import Pagination from "../../../Components/Pagination";
 import moment from "moment";
 import { FaSyncAlt } from "react-icons/fa";
 import { useRole } from "../../../Components/AuthContext/AuthContext"; // adjust path as needed
+import branchHeaders from "../../../Components/utils/headers";
 
 const SingleStaff = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-    const {role, user,setUser,setRole,clearAuthState} =  useRole();
+  const { role, user, setUser, setRole, clearAuthState } = useRole();
 
   const [attendance, setAttendance] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -32,7 +33,6 @@ const SingleStaff = () => {
       const fetchStaff = async () => {
         setLoading(true);
         try {
-
           if (fromDate && toDate && new Date(fromDate) > new Date(toDate)) {
             console.error(
               "Invalid date range. 'From Date' cannot be greater than 'To Date'."
@@ -50,9 +50,9 @@ const SingleStaff = () => {
           });
 
           const response = await axios.get(
-            `${URL}/api/admin/staff-attendance/${id}?${queryParams.toString()}`,
+            `${URL}/api/v2/staff-attendance/${id}?${queryParams.toString()}`,
             {
-                        withCredentials: true,
+              ...branchHeaders(),
 
               signal: controller.signal,
             }
@@ -64,7 +64,8 @@ const SingleStaff = () => {
           if (
             error.response &&
             (error.response.status === 401 ||
-              error.response.data?.message === "Credential Invalid or Expired Please Login Again")
+              error.response.data?.message ===
+                "Credential Invalid or Expired Please Login Again")
           ) {
             setTimeout(() => {
               clearAuthState();

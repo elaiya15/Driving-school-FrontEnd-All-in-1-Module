@@ -3,26 +3,8 @@ import axios from "axios";
 import { URL } from "../../App";
 import { useRole } from "../../Components/AuthContext/AuthContext.jsx";
 import { FaUsers } from "react-icons/fa";
-// import {
-//   LineChart,
-//   Line,
-//   XAxis,
-//   YAxis,
-//   CartesianGrid,
-//   Tooltip,
-//   ResponsiveContainer,
-// } from "recharts";
 
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  Tooltip,
-  CartesianGrid,
-  ResponsiveContainer,
-} from "recharts";
-
+// ✅ Custom toast
 const Toast = ({ message }) => (
   <div className="fixed top-5 right-5 z-50 w-[300px] max-w-xs p-4 text-white bg-red-600 rounded-md shadow-md animate-fade-in-down">
     {message}
@@ -33,7 +15,6 @@ export default function OwnerDashboard() {
   const { role, clearAuthState } = useRole();
   const [stats, setStats] = useState({});
   const [revenueData, setRevenueData] = useState([]);
-  const [yearlyRevenue, setYearlyRevenue] = useState([]);
   const [errorMsg, setErrorMsg] = useState("");
   const [loading, setLoading] = useState(true);
 
@@ -41,7 +22,9 @@ export default function OwnerDashboard() {
     const fetchData = async () => {
       try {
         if (role !== "owner") {
-          throw new Error("Unauthorized: Only owner can access this dashboard.");
+          throw new Error(
+            "Unauthorized: Only owner can access this dashboard."
+          );
         }
 
         const res = await axios.get(`${URL}/api/v1/dashboard/organization`, {
@@ -50,7 +33,6 @@ export default function OwnerDashboard() {
 
         setStats(res.data.stats);
         setRevenueData(res.data.revenueData || []);
-        setYearlyRevenue(res.data.yearlyRevenue || []);
       } catch (error) {
         console.error("Error loading dashboard:", error);
 
@@ -117,37 +99,11 @@ export default function OwnerDashboard() {
               <FaUsers className="text-3xl text-blue-500" />
             </div>
           </div>
-                 {/* Yearly Revenue Chart */}
-<div className="p-4 bg-white border border-blue-300 rounded-xl">
-  <h3 className="mb-4 text-lg font-bold text-blue-600">Yearly Revenue Trend</h3>
-  {yearlyRevenue.length === 0 ? (
-    <div className="py-20 text-center text-gray-400">
-      No yearly revenue data available.
-    </div>
-  ) : (
-    <div className="w-full max-w-full mx-auto h-[360px] rounded-md border border-blue-200">
-      <ResponsiveContainer width="100%" height="100%">
-        <BarChart data={yearlyRevenue} barSize={50}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="year" />
-          <YAxis allowDecimals={false} />
-          <Tooltip />
-          <Bar
-            dataKey="total"
-            fill="#1c64f2"
-            name="Total Revenue"
-            // radius={[4, 4, 0, 0]}
-          />
-        </BarChart>
-      </ResponsiveContainer>
-    </div>
-  )}
-</div>
 
           {/* Revenue Table */}
-          <div className="p-4 mb-6 bg-white border border-blue-300 rounded-xl">
+          <div className="p-4 bg-white border border-blue-300 rounded-xl">
             <h3 className="mb-4 text-lg font-bold text-blue-600">
-              Revenue Report (Branch-wise Monthly)
+              Revenue Report (Branch-wise)
             </h3>
             {revenueData.length === 0 ? (
               <div className="py-20 text-center text-gray-400">
@@ -185,38 +141,6 @@ export default function OwnerDashboard() {
               </div>
             )}
           </div>
-
-          {/* Yearly Revenue Chart
-          <div className="p-4 bg-white border border-blue-300 rounded-xl">
-            <h3 className="mb-4 text-lg font-bold text-blue-600">
-              Yearly Revenue Trend
-            </h3>
-            {yearlyRevenue.length === 0 ? (
-              <div className="py-20 text-center text-gray-400">
-                No yearly revenue data available.
-              </div>
-            ) : (
-              <div className="w-full h-[360px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={yearlyRevenue}>
-                    <CartesianGrid stroke="#eee" />
-                    <XAxis dataKey="year" />
-                    <YAxis />
-                    <Tooltip />
-                    <Line
-                      type="monotone"
-                      dataKey="total"
-                      stroke="#8884d8"
-                      strokeWidth={2}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
-            )}
-          </div> */}
-
-   
-
         </>
       )}
     </div>

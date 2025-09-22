@@ -182,7 +182,7 @@ const [errorMsg, setErrorMsg] = useState("");
       <div className="flex flex-col gap-4 mb-4 md:flex-row md:items-center md:justify-between">
         <h3 className="text-xl font-bold text-center md:text-left">Course Details</h3>
         <button
-          onClick={() => navigate("/admin/Course/new")}
+          onClick={() => navigate("/owner/Course/new")}
           className="w-full px-4 py-2 text-white transition bg-blue-500 rounded-md hover:bg-blue-600 md:w-auto"
         >
           Add Course
@@ -248,7 +248,7 @@ const [errorMsg, setErrorMsg] = useState("");
                     <td className="px-4 py-2">{course.fee}</td>
                     <td className="px-6 py-4">
                       <button
-                        onClick={() => navigate(`/admin/Course/${course._id}/edit`)}
+                        onClick={() => navigate(`/owner/Course/${course._id}/edit`)}
                         className="px-2 py-1 bg-gray-100 rounded hover:bg-gray-200"
                       >
                         <i className="text-blue-600 fa-solid fa-pen-to-square"></i>

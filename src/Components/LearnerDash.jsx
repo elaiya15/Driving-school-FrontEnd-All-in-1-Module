@@ -8,6 +8,7 @@ import {
 } from 'react-icons/fa';
 
 import { useRole } from './AuthContext/AuthContext.jsx';
+import branchHeaders from "./utils/headers.jsx";
 
 const URL = import.meta.env.VITE_BACK_URL;
 
@@ -27,8 +28,8 @@ const LearnerDashboard = () => {
   useEffect(() => {
     const fetchDashboard = async () => {
       try {
-        const res = await axios.get(`${URL}/api/dashboard/learner/${user.user_id}`, {
-          withCredentials: true,
+        const res = await axios.get(`${URL}/api/v2/dashboard/learner/${user.user_id}`, {
+           ...branchHeaders(),
         });
         setData(res.data);
       } catch (error) {

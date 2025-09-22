@@ -5,7 +5,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { URL } from "../../../App";
 import Pagination from "../../../Components/Pagination";
 import { useRole } from "../../../Components/AuthContext/AuthContext";
-
+import branchHeaders from "../../../Components/utils/headers";
 
 // ✅ Custom toast component
 const Toast = ({ message }) => (
@@ -100,10 +100,10 @@ const LearnerSingleAttendance = () => {
         }
 
         const response = await axios.get(
-          `${URL}/api/learner-attendance/${user.user_id}`,
+          `${URL}/api/v2/learner-attendance/${user.user_id}`,
           {
             params,
-            withCredentials: true,
+           ...branchHeaders(),
             signal: controller.signal,
           }
         );

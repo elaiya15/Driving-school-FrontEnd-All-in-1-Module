@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { extractDriveFileId } from "../../../Components/ImageProxyRouterFunction/funtion.js";
 import { useRole } from "../../../Components/AuthContext/AuthContext";
+import branchHeaders from "../../../Components/utils/headers.jsx";
 
 const validationSchema = yup.object().shape({
   selectedStaff: yup.string().required("Please select a staff."),
@@ -56,9 +57,7 @@ const MarkStaff = () => {
   useEffect(() => {
     const fetchStaff = async () => {
       try {
-        const res = await axios.get(`${URL}/api/staff`, {
-          withCredentials: true,
-        });
+        const res = await axios.get(`${URL}/api/v2/staff`, branchHeaders());
         setStaffList(res.data.staffList);
       } catch (err) {
         if (
@@ -95,9 +94,7 @@ const MarkStaff = () => {
     };
 
     try {
-      await axios.post(`${URL}/api/admin/staff-attendance`, payload, {
-        withCredentials: true,
-      });
+      await axios.post(`${URL}/api/v2/staff-attendance`, payload, branchHeaders());
       setToastOpen(true);
       reset();
       setTimeout(() => {

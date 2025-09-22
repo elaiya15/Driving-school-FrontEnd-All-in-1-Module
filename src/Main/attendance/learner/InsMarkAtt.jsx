@@ -7,6 +7,7 @@ import * as yup from "yup";
 import { URL } from "../../../App";
 import { extractDriveFileId } from "../../../Components/ImageProxyRouterFunction/funtion.js";
 import { useRole } from "../../../Components/AuthContext/AuthContext";
+import branchHeaders from "../../../Components/utils/headers.jsx";
 
 const schema = yup.object().shape({
 selectedLearner: yup
@@ -75,8 +76,8 @@ const InsMarkAtt = () => {
   useEffect(() => {
     const fetchLearners = async () => {
       try {
-        const res = await axios.get(`${URL}/api/user/learners`, {
-          withCredentials: true,
+        const res = await axios.get(`${URL}/api/v2/learner`, {
+          ...branchHeaders()
         });
         setLearners(res.data.learners);
       } catch (err) {
@@ -106,8 +107,8 @@ const InsMarkAtt = () => {
     if (learnerId) {
       try {
         
-        const res = await axios.get(`${URL}/api/course-assigned/${learnerId}`, {
-          withCredentials: true,
+        const res = await axios.get(`${URL}/api/v2/course-assigned/${learnerId}`, {
+          ...branchHeaders()
         });
         const assignments = res.data.assignments;
         if (!assignments || assignments.length === 0) {
@@ -178,8 +179,8 @@ const InsMarkAtt = () => {
         };
       }
 
-      await axios.post(`${URL}/api/learner-attendance`, requestBody, {
-        withCredentials: true,
+      await axios.post(`${URL}/api/v2/learner-attendance`, requestBody, {
+      ...branchHeaders()
       });
 
       setToastOpen(true);

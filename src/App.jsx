@@ -1,8 +1,11 @@
-
-
 // App.jsx
 import { useEffect, useState } from "react";
-import { BrowserRouter as Router, Routes, Route ,Navigate} from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 import LoginPage from "./login/LoginPage";
 import AdminDash from "./Components/AdminDash";
 import Dashboard from "./Components/DashBoard";
@@ -69,11 +72,13 @@ import DrivingCertificateForm5 from "./Components/FormGenerator/DrivingCertifica
 import SplashScreen from "./Components/SplashScreen";
 import Page404 from "./Components/Page404";
 import ProtectedRoute from "./Components/ProtectedRoute";
-import { RoleProvider  } from './Components/AuthContext/AuthContext.jsx';
+import { RoleProvider } from "./Components/AuthContext/AuthContext.jsx";
 import OwnerDash from "./Main/Owner/ownerDashboard.jsx";
 import OwnerLayout from "./Main/Owner/OwnerLayout.jsx";
 import NetworkStatus from "./Components/NetworkStatus"; // Add this import
 import BranchList from "./Main/Owner/branchs.jsx";
+import BranchSingleView from "./Main/Owner/branchView.jsx";
+import BranchEdit from "./Main/Owner/branchEdit.jsx";
 import AddAdmin from "./Main/Owner/AddAdmin.jsx";
 import BranchAdminList from "./Main/Owner/branchAdminList.jsx";
 import BranchCreate from "./Main/Owner/AddBranch.jsx";
@@ -81,6 +86,9 @@ import AdminPreview from "./Main/Owner/AdminPreview.jsx";
 import AdminEdit from "./Main/Owner/AdminEdit.jsx";
 import OwnerGuard from "./OwnerGuard.jsx";
 import AdminGuard from "./AdminGuard.jsx";
+import BranchExpenses from "./Main/payment/BranchExpenses.jsx";
+
+
 export const URL = import.meta.env.VITE_BACK_URL;
 
 function App() {
@@ -95,137 +103,169 @@ function App() {
   ) : (
     <Router>
       <RoleProvider>
-         {/* NetworkStatus If user loses internet → 🚫 No internet connection or
+        {/* NetworkStatus If user loses internet → 🚫 No internet connection or
          When internet comes back → ✅ Back online*/}
-         {/* <NetworkStatus /> */}
-         {/* Public Routes */}
-       <Routes>
-        <Route path="/" element={<LoginPage />} />
-        <Route path="/form" element={<Form14Register />} />
-        <Route path="/form15" element={<Form15 />} />
-        <Route path="/Driving5" element={<DrivingCertificateForm5 />} />
-        <Route path="*" element={<Page404 />} />
-        {/* Owner Protected Routes */}
-        <Route element={<OwnerGuard />}>
-      <Route 
-      path="owner"
-          element={<ProtectedRoute allowedRoles={["owner"]}>
-              <OwnerLayout>
-        <AdminDash />
-      </OwnerLayout>
-          </ProtectedRoute>} >
-            <Route index element={<Navigate to="dashboard" replace />} />
-          <Route path="dashboard" element={<OwnerDash />}/>
-          <Route path="branches" element={<BranchList />} />
-          <Route path="branches/create" element={<BranchCreate />} />
-          <Route path="branch-admin" element={<BranchAdminList />} />
-          <Route path="add-admin" element={<AddAdmin />} />
-          <Route path="branch-admin/:branchId/:id/view" element={<AdminPreview />} />
-          <Route path="branch-admin/:branchId/:id/edit" element={<AdminEdit />} />
-       </Route>
-       </Route>
-        {/* Admin Protected Routes */}
-         <Route element={<AdminGuard />}>
-        <Route
-          path="admin"
-          element={<ProtectedRoute allowedRoles={["admin","owner"]}><AdminDash /></ProtectedRoute>}
-        >
-          <Route index element={<Navigate to="dashboard" replace />} />
-          <Route path="dashboard" element={<Dashboard />} />
-          <Route path="learner" element={<LearnerContainer />}>
-            <Route path="list" element={<LearnerTable />} />
-            <Route path="new" element={<NewRegistration />} />
-            <Route path=":admissionNumber/:id/edit" element={<LearnEdit />} />
-            <Route path=":id/view" element={<LearnPreview />} />
-          </Route>
-          <Route path="instructor" element={<InstructorContainer />}>
-            <Route path="list" element={<InstructorTable />} />
-            <Route path="new" element={<NewInsRegister />} />
-            <Route path=":id/edit" element={<InsEdit />} />
-            <Route path=":id/view" element={<InsPreview />} />
-          </Route>
-          <Route path="staff" element={<StaffContainer />}>
-            <Route path="list" element={<StaffTable />} />
-            <Route path="new" element={<NewStaff />} />
-            <Route path=":id/edit" element={<StaffEdit />} />
-            <Route path=":id/view" element={<StaffPreview />} />
-          </Route>
-          <Route path="Course" element={<CourseContainer />}>
-            <Route path="list" element={<CourseTable />} />
-            <Route path="new" element={<AddCourse />} />
-            <Route path=":id/edit" element={<UpdateCourse />} />
-          </Route>
-          <Route path="course-assigned" element={<CourseAssignContainer />}>
-            <Route path="list" element={<AssignCourseTable />} />
-            <Route path="new" element={<AssignCourse />} />
-            <Route path=":id/edit" element={<AssignUpdate />} />
-          </Route>
-          <Route path="attendance" element={<AttendanceContainer />}>
-            <Route path="staff" element={<StaffContainer />}>
-              <Route path="list" element={<StaffAttTable />} />
-              <Route path="mark" element={<MarkStaff />} />
-            </Route>
-            <Route path="learner" element={<AttLearnerContainer />}>
-              <Route path="list" element={<LearnerAttTable />} />
-              <Route path="mark" element={<MarkLearner />} />
-            </Route>
-            <Route path="instructor" element={<AttInstructorContainer />}>
-              <Route path="list" element={<InsAttTable />} />
-              <Route path="mark" element={<MarkIns />} />
-            </Route>
-          </Route>
-          <Route path="payment" element={<PaymentContainer />}>
-            <Route path="list" element={<PaymentTable />} />
-            <Route path="add" element={<AddPayment />} />
-          </Route>
-          <Route path="test-details" element={<TestContainer />}>
-            <Route path="list" element={<TestTable />} />
-            <Route path="new" element={<AddTest />} />
-            <Route path=":id/edit" element={<UpdateTest />} />
-          </Route>
-          <Route path="sms-settings" element={<SmsContainer />}>
-            <Route path="list" element={<SmsTable />} />
-            <Route path="add" element={<SmsAdd />} />
-            <Route path=":id/edit" element={<SmsSetting />} />
-          </Route>
-        </Route>
-        </Route>
+        {/* <NetworkStatus /> */}
+        {/* Public Routes */}
+        <Routes>
+          <Route path="/" element={<LoginPage />} />
+          <Route path="/form" element={<Form14Register />} />
+          <Route path="/form15" element={<Form15 />} />
+          <Route path="/Driving5" element={<DrivingCertificateForm5 />} />
+          <Route path="*" element={<Page404 />} />
+          {/* Owner Protected Routes */}
+          <Route element={<OwnerGuard />}>
+            <Route
+              path="owner"
+              element={
+                <ProtectedRoute allowedRoles={["owner"]}>
+                  <OwnerLayout>
+                    <AdminDash />
+                  </OwnerLayout>
+                </ProtectedRoute>
+              }
+            >
+              <Route index element={<Navigate to="dashboard" replace />} />
+              <Route path="dashboard" element={<OwnerDash />} />
+              <Route path="branches" element={<BranchList />} />
+              <Route path="branches/create" element={<BranchCreate />} />
+              <Route path="branches/:id/view" element={<BranchSingleView />} />
+              <Route path="branches/:id/edit" element={<BranchEdit/>} />
 
-  {/* Learner Protected Routes */}
-        <Route
-          path="learner"
-          element={<ProtectedRoute allowedRoles={["learner"]}><Learner /></ProtectedRoute>}
-        >
-          <Route index element={<Navigate to="learnerDash" replace />} />
-          <Route path="learnerDash" element={<LearnerDash />} />
-          <Route path="attendance" element={<LearnerSingleAttendance />} />
-          <Route path="payment" element={<LearnerSinglePayment />} />
-          <Route path="test-details" element={<LearnerSingleTest />} />
-          <Route path="profile" element={<LearnerProfile />} />
-          <Route path="course" element={<LearnerSingleAssign />} />
-        </Route>
+              <Route path="branch-admin" element={<BranchAdminList />} />
+              <Route path="add-admin" element={<AddAdmin />} />
+              <Route
+                path="branch-admin/:branchId/:id/view"
+                element={<AdminPreview />}
+              />
+              <Route
+                path="branch-admin/:branchId/:id/edit"
+                element={<AdminEdit />}
+              />
+              <Route path="Course" element={<CourseContainer />}>
+                <Route path="list" element={<CourseTable />} />
+                <Route path="new" element={<AddCourse />} />
+                <Route path=":id/edit" element={<UpdateCourse />} />
+              </Route>
+            </Route>
+          </Route>
+          {/* Admin Protected Routes */}
+          <Route element={<AdminGuard />}>
+            <Route
+              path="admin"
+              element={
+                <ProtectedRoute allowedRoles={["admin", "owner"]}>
+                  <AdminDash />
+                </ProtectedRoute>
+              }
+            >
+              <Route index element={<Navigate to="dashboard" replace />} />
+              <Route path="dashboard" element={<Dashboard />} />
+              <Route path="learner" element={<LearnerContainer />}>
+                <Route path="list" element={<LearnerTable />} />
+                <Route path="new" element={<NewRegistration />} />
+                <Route
+                  path=":admissionNumber/:id/edit"
+                  element={<LearnEdit />}
+                />
+                <Route path=":id/view" element={<LearnPreview />} />
+              </Route>
+              <Route path="instructor" element={<InstructorContainer />}>
+                <Route path="list" element={<InstructorTable />} />
+                <Route path="new" element={<NewInsRegister />} />
+                <Route path=":id/edit" element={<InsEdit />} />
+                <Route path=":id/view" element={<InsPreview />} />
+              </Route>
+              <Route path="staff" element={<StaffContainer />}>
+                <Route path="list" element={<StaffTable />} />
+                <Route path="new" element={<NewStaff />} />
+                <Route path=":id/edit" element={<StaffEdit />} />
+                <Route path=":id/view" element={<StaffPreview />} />
+              </Route>
 
-    {/* instructor Protected Routes */}
-        <Route
-          path="instructor"
-          element={<ProtectedRoute allowedRoles={["instructor"]}><Instructor /></ProtectedRoute>}
-        >
-          <Route index element={<Navigate to="instructorDash" replace />} />
-          <Route path="instructorDash" element={<InstructorDash />} />
-          <Route path="attendance" element={<AttendanceContainer />}>
-            <Route path="list" element={<InsLearnerAttTable />} />
-            <Route path="add" element={<InsMarkAtt />} />
+              <Route path="course-assigned" element={<CourseAssignContainer />}>
+                <Route path="list" element={<AssignCourseTable />} />
+                <Route path="new" element={<AssignCourse />} />
+                <Route path=":id/edit" element={<AssignUpdate />} />
+              </Route>
+              <Route path="attendance" element={<AttendanceContainer />}>
+                <Route path="staff" element={<StaffContainer />}>
+                  <Route path="list" element={<StaffAttTable />} />
+                  <Route path="mark" element={<MarkStaff />} />
+                </Route>
+                <Route path="learner" element={<AttLearnerContainer />}>
+                  <Route path="list" element={<LearnerAttTable />} />
+                  <Route path="mark" element={<MarkLearner />} />
+                </Route>
+                <Route path="instructor" element={<AttInstructorContainer />}>
+                  <Route path="list" element={<InsAttTable />} />
+                  <Route path="mark" element={<MarkIns />} />
+                </Route>
+              </Route>
+               <Route path="account">
+              <Route path="payment" element={<PaymentContainer />}>
+                <Route path="list" element={<PaymentTable />} />
+                <Route path="add" element={<AddPayment />} />
+              </Route>
+
+             <Route path="expenses" element={< BranchExpenses />} />
+              </Route>
+
+              <Route path="test-details" element={<TestContainer />}>
+                <Route path="list" element={<TestTable />} />
+                <Route path="new" element={<AddTest />} />
+                <Route path=":id/edit" element={<UpdateTest />} />
+              </Route>
+              <Route path="sms-settings" element={<SmsContainer />}>
+                <Route path="list" element={<SmsTable />} />
+                <Route path="add" element={<SmsAdd />} />
+                <Route path=":id/edit" element={<SmsSetting />} />
+              </Route>
+            </Route>
           </Route>
-          <Route path="payment" element={<PaymentContainer />}>
-            <Route path="list" element={<InstructorLearnerPayments />} />
-            <Route path="add" element={<InsLearnerAddPayments />} />
+
+          {/* Learner Protected Routes */}
+          <Route
+            path="learner"
+            element={
+              <ProtectedRoute allowedRoles={["learner"]}>
+                <Learner />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<Navigate to="learnerDash" replace />} />
+            <Route path="learnerDash" element={<LearnerDash />} />
+            <Route path="attendance" element={<LearnerSingleAttendance />} />
+            <Route path="payment" element={<LearnerSinglePayment />} />
+            <Route path="test-details" element={<LearnerSingleTest />} />
+            <Route path="profile" element={<LearnerProfile />} />
+            <Route path="course" element={<LearnerSingleAssign />} />
           </Route>
-          <Route path="profile" element={<InstructorProfile />} />
-        </Route>
-      </Routes>
-    </RoleProvider>
+
+          {/* instructor Protected Routes */}
+          <Route
+            path="instructor"
+            element={
+              <ProtectedRoute allowedRoles={["instructor"]}>
+                <Instructor />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<Navigate to="instructorDash" replace />} />
+            <Route path="instructorDash" element={<InstructorDash />} />
+            <Route path="attendance" element={<AttendanceContainer />}>
+              <Route path="list" element={<InsLearnerAttTable />} />
+              <Route path="add" element={<InsMarkAtt />} />
+            </Route>
+            <Route path="payment" element={<PaymentContainer />}>
+              <Route path="list" element={<InstructorLearnerPayments />} />
+              <Route path="add" element={<InsLearnerAddPayments />} />
+            </Route>
+            <Route path="profile" element={<InstructorProfile />} />
+          </Route>
+        </Routes>
+      </RoleProvider>
     </Router>
-    
   );
 }
 

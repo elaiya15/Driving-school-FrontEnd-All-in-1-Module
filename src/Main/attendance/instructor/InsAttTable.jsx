@@ -6,6 +6,7 @@ import moment from "moment";
 import Pagination from "../../../Components/Pagination";
 import { extractDriveFileId } from "../../../Components/ImageProxyRouterFunction/funtion.js";
 import { useRole } from "../../../Components/AuthContext/AuthContext";
+import branchHeaders from "../../../Components/utils/headers.jsx";
 
 const InsAttTable = () => {
   const navigate = useNavigate();
@@ -70,7 +71,8 @@ const InsAttTable = () => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const response = await axios.get(`${URL}/api/instructor-attendance`, {
+        const response = await axios.get(`${URL}/api/v2/instructor-attendance`, {
+            ...branchHeaders(),
           params: {
             fromdate: moment(fromdate).format("YYYY-MM-DD"),
             todate: moment(todate).format("YYYY-MM-DD"),
@@ -79,7 +81,7 @@ const InsAttTable = () => {
             search: searchQuery,
             status: selectedStatus,
           },
-          withCredentials: true,
+        
           signal: controllerRef.current.signal,
         });
 

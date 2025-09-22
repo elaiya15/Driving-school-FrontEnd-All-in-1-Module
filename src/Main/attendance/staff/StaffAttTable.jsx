@@ -6,6 +6,7 @@ import moment from "moment";
 import Pagination from "../../../Components/Pagination";
 import { extractDriveFileId } from "../../../Components/ImageProxyRouterFunction/funtion.js";
 import { useRole } from "../../../Components/AuthContext/AuthContext";
+import branchHeaders from "../../../Components/utils/headers.jsx";
 
 const StaffAttTable = () => {
   const navigate = useNavigate();
@@ -67,7 +68,7 @@ const StaffAttTable = () => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const res = await axios.get(`${URL}/api/admin/staff-attendance`, {
+        const res = await axios.get(`${URL}/api/v2/staff-attendance`, {
           params: {
             search: searchQuery,
             fromdate: moment(fromDate).format("YYYY-MM-DD"),
@@ -76,7 +77,7 @@ const StaffAttTable = () => {
             page: currentPage,
             limit: itemsPerPage,
           },
-          withCredentials: true,
+          ...branchHeaders(),
           signal: controller.signal,
         });
 

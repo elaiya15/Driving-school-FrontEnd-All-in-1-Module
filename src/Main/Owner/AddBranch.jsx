@@ -59,20 +59,20 @@ const BranchCreate = () => {
 //     fetchAdmins();
 //   }, []);
    
-      useEffect(() => {
-  const fetchAdmins = async () => {
-    try {
-      let organizationId = user ? user.organizationId : null;
-      const res = await axios.get(`${URL}/api/v1/admins/${organizationId}`,branchHeaders());
+//       useEffect(() => {
+//   const fetchAdmins = async () => {
+//     try {
+//       let organizationId = user ? user.organizationId : null;
+//       const res = await axios.get(`${URL}/api/v1/admins/${organizationId}`,branchHeaders());
 
--     setAdmins(res.data);
-+     setAdmins(res.data?.data || []);  // ✅ Extract the array safely
-    } catch (error) {
-      console.error("Error fetching admins", error);
-    }
-  };
-  fetchAdmins();
-}, []);
+// -     setAdmins(res.data);
+// +     setAdmins(res.data?.data || []);  // ✅ Extract the array safely
+//     } catch (error) {
+//       console.error("Error fetching admins", error);
+//     }
+//   };
+//   fetchAdmins();
+// }, []);
 
 
 

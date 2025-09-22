@@ -7,6 +7,7 @@ import * as yup from "yup";
 import { URL } from "../../../App";
 import { extractDriveFileId } from "../../../Components/ImageProxyRouterFunction/funtion.js";
 import { useRole } from "../../../Components/AuthContext/AuthContext";
+import branchHeaders from "../../../Components/utils/headers.jsx";
 
 const schema = yup.object().shape({
   selectedLearner: yup.string().required("Learner is required"),
@@ -59,7 +60,7 @@ const MarkLearner = () => {
   useEffect(() => {
     const fetchLearners = async () => {
       try {
-        const res = await axios.get(`${URL}/api/user/learners`, { withCredentials: true });
+        const res = await axios.get(`${URL}/api/v2/learner`, branchHeaders());
         setLearners(res.data.learners);
       } catch (err) {
         if (!axios.isCancel(err) && err.response?.status === 401) {
@@ -76,8 +77,8 @@ const MarkLearner = () => {
       setSelectedLearnerDetails(learner);
       const fetchCourses = async () => {
         try {
-          const res = await axios.get(`${URL}/api/course-assigned/${selectedLearner}`, {
-            withCredentials: true,
+          const res = await axios.get(`${URL}/api/v2/course-assigned/${selectedLearner}`, {
+            ...branchHeaders()
           });
           setAssignedCourses(res.data.assignments);
         } catch (err) {
@@ -126,8 +127,8 @@ const MarkLearner = () => {
         };
       }
 
-      await axios.post(`${URL}/api/learner-attendance`, requestBody, {
-        withCredentials: true,
+      await axios.post(`${URL}/api/v2/learner-attendance`, requestBody, {
+       ...branchHeaders()
       });
 
       setToastOpen(true);

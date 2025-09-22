@@ -7,17 +7,12 @@ import * as yup from "yup";
 import { URL } from "../../../App";
 import { extractDriveFileId } from "../../../Components/ImageProxyRouterFunction/funtion.js";
 import { useRole } from "../../../Components/AuthContext/AuthContext";
+import branchHeaders from "../../../Components/utils/headers.jsx";
 
 const schema = yup.object().shape({
-selectedLearner: yup
-    .string()
-    .required("Please select a learner"),
-  assignedCourses: yup
-    .string()
-    .required("Please select a course"),
-  classType: yup
-    .string()
-    .required("Please select class type"),
+  selectedLearner: yup.string().required("Please select a learner"),
+  assignedCourses: yup.string().required("Please select a course"),
+  classType: yup.string().required("Please select class type"),
   date: yup.string().required("Date is required"),
   checkIn: yup.string().required("Check-in time is required"),
   checkOut: yup
@@ -54,7 +49,6 @@ const MarkLearner = () => {
   const [loading, setLoading] = useState(false);
   const [errorMessages, setErrorMessages] = useState([]);
 
-
   const {
     register,
     handleSubmit,
@@ -71,12 +65,11 @@ const MarkLearner = () => {
     setValue("classType", classType);
   }, [selectedLearner, selectedAssignedCourseId, classType, setValue]);
 
-
   useEffect(() => {
     const fetchLearners = async () => {
       try {
-        const res = await axios.get(`${URL}/api/user/learners`, {
-          withCredentials: true,
+        const res = await axios.get(`${URL}/api/v2/learner`, {
+          ...branchHeaders(),
         });
         setLearners(res.data.learners);
       } catch (err) {
@@ -105,9 +98,12 @@ const MarkLearner = () => {
 
     if (learnerId) {
       try {
-        const res = await axios.get(`${URL}/api/course-assigned/${learnerId}`, {
-          withCredentials: true,
-        });
+        const res = await axios.get(
+          `${URL}/api/v2/course-assigned/${learnerId}`,
+          {
+            ...branchHeaders(),
+          }
+        );
         const assignments = res.data.assignments;
         if (!assignments || assignments.length === 0) {
           setCourseError("No course assigned for this learner");
@@ -130,19 +126,18 @@ const MarkLearner = () => {
   };
 
   const onSubmit = async (data) => {
-//     console.log(selectedLearner);
-    
-//    if (!selectedLearner || !selectedAssignedCourseId || !classType) {
-//   const newErrors = {};
-//   if (!selectedLearner) newErrors.selectedLearner = { message: "Please select a learner" };
-//   if (!selectedAssignedCourseId) newErrors.assignedCourses = { message: "Please select a course" };
-//   if (!classType) newErrors.classType = { message: "Please select class type" };
+    //     console.log(selectedLearner);
 
-//   setToastError(newErrors);
-//   // setTimeout(() => setToastError({}), 4000);
-//   return;
-// }
+    //    if (!selectedLearner || !selectedAssignedCourseId || !classType) {
+    //   const newErrors = {};
+    //   if (!selectedLearner) newErrors.selectedLearner = { message: "Please select a learner" };
+    //   if (!selectedAssignedCourseId) newErrors.assignedCourses = { message: "Please select a course" };
+    //   if (!classType) newErrors.classType = { message: "Please select class type" };
 
+    //   setToastError(newErrors);
+    //   // setTimeout(() => setToastError({}), 4000);
+    //   return;
+    // }
 
     setApiError("");
     setLoading(true);
@@ -177,8 +172,8 @@ const MarkLearner = () => {
         };
       }
 
-      await axios.post(`${URL}/api/learner-attendance`, requestBody, {
-        withCredentials: true,
+      await axios.post(`${URL}/api/v2/learner-attendance`, requestBody, {
+        ...branchHeaders(),
       });
 
       setToastOpen(true);
@@ -194,38 +189,38 @@ const MarkLearner = () => {
         navigate(-1);
       }, 1000);
     } catch (error) {
-  const status = error?.response?.status;
-  const message = error?.response?.data?.message;
+      const status = error?.response?.status;
+      const message = error?.response?.data?.message;
 
-  if (
-    status === 401 ||
-    message === "Credential Invalid or Expired Please Login Again"
-  ) {
-    setErrorMessages(["Credential Invalid or Expired Please Login Again"]);
-    return setTimeout(() => {
-      clearAuthState();
-      navigate("/");
-    }, 2000);
-  }
+      if (
+        status === 401 ||
+        message === "Credential Invalid or Expired Please Login Again"
+      ) {
+        setErrorMessages(["Credential Invalid or Expired Please Login Again"]);
+        return setTimeout(() => {
+          clearAuthState();
+          navigate("/");
+        }, 2000);
+      }
 
-  if (status === 403) {
-    // Handle 403 Forbidden
-    const forbiddenMsg = "You do not have permission to perform this action.";
-    setErrorMessages([forbiddenMsg]);
-    return setTimeout(() => setErrorMessages([]), 4000);
-  }
+      if (status === 403) {
+        // Handle 403 Forbidden
+        const forbiddenMsg =
+          "You do not have permission to perform this action.";
+        setErrorMessages([forbiddenMsg]);
+        return setTimeout(() => setErrorMessages([]), 4000);
+      }
 
-  const errorMsg =
-    error?.response?.data?.errors || error?.message || "An error occurred";
-  const messages = Array.isArray(errorMsg) ? errorMsg : [errorMsg];
-  console.log(errorMsg);
+      const errorMsg =
+        error?.response?.data?.errors || error?.message || "An error occurred";
+      const messages = Array.isArray(errorMsg) ? errorMsg : [errorMsg];
+      console.log(errorMsg);
 
-  setErrorMessages(messages);
-  setTimeout(() => setErrorMessages([]), 4000);
-} finally {
-  setLoading(false);
-}
-
+      setErrorMessages(messages);
+      setTimeout(() => setErrorMessages([]), 4000);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const filteredLearners = learners.filter((learner) =>
@@ -250,7 +245,7 @@ const MarkLearner = () => {
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
         <div className="flex flex-col gap-6 lg:flex-row">
           <div className="flex flex-col w-full gap-4 lg:w-3/4">
-              {selectedLearnerDetails && (
+            {selectedLearnerDetails && (
               <div className="block w-full p-4 border rounded-md lg:hidden">
                 <div className="flex flex-col items-center gap-2">
                   <img
@@ -270,7 +265,7 @@ const MarkLearner = () => {
               </div>
             )}
 
-  <div className="relative w-full">
+            <div className="relative w-full">
               <label
                 className={`
       absolute left-3 bg-white px-1 transition-all duration-200 pointer-events-none
@@ -297,9 +292,11 @@ const MarkLearner = () => {
               >
                 {learners.find((l) => l._id === selectedLearner)?.fullName}
               </button>
-                      {errors.selectedLearner && (
-          <p className="mt-1 text-sm text-red-500">{errors.selectedLearner.message}</p>
-        )}
+              {errors.selectedLearner && (
+                <p className="mt-1 text-sm text-red-500">
+                  {errors.selectedLearner.message}
+                </p>
+              )}
 
               {isLearnerOpen && (
                 <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg">
@@ -331,15 +328,14 @@ const MarkLearner = () => {
                   </div>
                 </div>
               )}
-        
-   </div>
-      {/* {errors.selectedLearner?.message && (
+            </div>
+            {/* {errors.selectedLearner?.message && (
   <p className="mt-1 text-sm text-red-500">{errors.selectedLearner.message}</p>
 )} */}
             {courseError && (
               <p className="mt-1 text-sm text-red-500">{courseError}</p>
             )}
-        
+
             <div className="relative w-full">
               <label
                 className={`
@@ -385,10 +381,12 @@ const MarkLearner = () => {
                             setIsCourseDropdownOpen(false);
                           }}
                           disabled={
-                            assignment.totalDays === assignment.attendedDays ||
-                            assignment.statusOne !== "Completed"
-                              ? false
-                              : true
+                            !(
+                              assignment.totalDays ===
+                                assignment.attendedDays ||
+                              assignment.statusOne === "Completed" ||
+                              assignment.statusOne === "Cancelled"
+                            )
                           }
                           className="w-full px-4 py-2 text-sm text-left text-gray-700 hover:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed"
                         >
@@ -401,7 +399,7 @@ const MarkLearner = () => {
                   </div>
                 </div>
               )}
-{/* 
+              {/* 
               {errors.selectedAssignedCourseId && (
                 <p className="mt-1 text-sm text-red-500">
                   {errors.selectedAssignedCourseId}
@@ -410,11 +408,10 @@ const MarkLearner = () => {
             </div>
 
             {errors.assignedCourses?.message && (
-  <p className="mt-1 text-sm text-red-500">{errors.assignedCourses.message}</p>
-)}
-
-
-
+              <p className="mt-1 text-sm text-red-500">
+                {errors.assignedCourses.message}
+              </p>
+            )}
 
             <div className="relative w-full">
               <label
@@ -469,98 +466,125 @@ const MarkLearner = () => {
                 <p className="mt-1 text-sm text-red-500">{errors.classType}</p>
               )} */}
             </div>
-{errors.classType?.message && (
-  <p className="mt-1 text-sm text-red-500">{errors.classType.message}</p>
-)}
-         <div className="relative w-full">
-  <textarea
-    id="description"
-    {...register("description")}
-    className="peer block w-full px-2.5 pb-2.5 pt-4 text-sm text-gray-900 bg-transparent border border-gray-300 rounded-lg resize-none appearance-none focus:outline-none focus:ring-0 focus:border-blue-500"
-    placeholder=" "
-  ></textarea>
-  <label
-    htmlFor="description"
-    className="absolute text-sm text-gray-500 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white px-2 peer-placeholder-shown:scale-100 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 peer-focus:text-blue-500 start-1"
-  >
-    Description
-  </label>
-  {errors.description && (
-    <p className="mt-1 text-sm text-red-500">{errors.description.message}</p>
-  )}
-</div>
+            {errors.classType?.message && (
+              <p className="mt-1 text-sm text-red-500">
+                {errors.classType.message}
+              </p>
+            )}
+            <div className="relative w-full">
+              <textarea
+                id="description"
+                {...register("description")}
+                className="peer block w-full px-2.5 pb-2.5 pt-4 text-sm text-gray-900 bg-transparent border border-gray-300 rounded-lg resize-none appearance-none focus:outline-none focus:ring-0 focus:border-blue-500"
+                placeholder=" "
+              ></textarea>
+              <label
+                htmlFor="description"
+                className="absolute text-sm text-gray-500 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white px-2 peer-placeholder-shown:scale-100 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 peer-focus:text-blue-500 start-1"
+              >
+                Description
+              </label>
+              {errors.description && (
+                <p className="mt-1 text-sm text-red-500">
+                  {errors.description.message}
+                </p>
+              )}
+            </div>
 
-<div className="relative w-full">
-  <input
-    type="date"
-    id="date"
-    {...register("date")}
-    className="peer block w-full px-2.5 pb-2.5 pt-4 text-sm text-gray-900 bg-transparent border border-gray-300 rounded-lg appearance-none focus:outline-none focus:ring-0 focus:border-blue-500"
-    placeholder=" "
-  />
-  <label
-    htmlFor="date"
-    className="absolute text-sm text-gray-500 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white px-2 peer-placeholder-shown:scale-100 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 peer-focus:text-blue-500 start-1"
-  >
-    Date
-  </label>
-  {errors.date && (
-    <p className="mt-1 text-sm text-red-500">{errors.date.message}</p>
-  )}
-</div>
-
+            <div className="relative w-full">
+              <input
+                type="date"
+                id="date"
+                {...register("date")}
+                className="peer block w-full px-2.5 pb-2.5 pt-4 text-sm text-gray-900 bg-transparent border border-gray-300 rounded-lg appearance-none focus:outline-none focus:ring-0 focus:border-blue-500"
+                placeholder=" "
+              />
+              <label
+                htmlFor="date"
+                className="absolute text-sm text-gray-500 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white px-2 peer-placeholder-shown:scale-100 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 peer-focus:text-blue-500 start-1"
+              >
+                Date
+              </label>
+              {errors.date && (
+                <p className="mt-1 text-sm text-red-500">
+                  {errors.date.message}
+                </p>
+              )}
+            </div>
 
             <div className="grid gap-6 md:grid-cols-2">
-             <div className="relative w-full">
-          
-            <div className="absolute inset-y-0 end-0 top-0 flex items-center pe-3.5 pointer-events-none">
-                <svg className="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
-                    <path fill-rule="evenodd" d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm11-4a1 1 0 1 0-2 0v4a1 1 0 0 0 .293.707l3 3a1 1 0 0 0 1.414-1.414L13 11.586V8Z" clip-rule="evenodd"/>
-                </svg>
-            </div>
-  <input
-    type="time"
-    id="checkIn"
-    {...register("checkIn")}
-    className="peer block w-full px-2.5 pb-2.5 pt-4 text-sm text-gray-900 bg-transparent border border-gray-300 rounded-lg appearance-none focus:outline-none focus:ring-0 focus:border-blue-500"
-    placeholder=" "
-  />
-  
-  <label
-    htmlFor="checkIn"
-    className="absolute text-sm text-gray-500 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white px-2 peer-placeholder-shown:scale-100 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 peer-focus:text-blue-500 start-1"
-  >
-    Check-In Time
-  </label>
-  {errors.checkIn && (
-    <p className="mt-1 text-sm text-red-500">{errors.checkIn.message}</p>
-  )}
-</div>
+              <div className="relative w-full">
+                <div className="absolute inset-y-0 end-0 top-0 flex items-center pe-3.5 pointer-events-none">
+                  <svg
+                    className="w-4 h-4 text-gray-500 dark:text-gray-400"
+                    aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm11-4a1 1 0 1 0-2 0v4a1 1 0 0 0 .293.707l3 3a1 1 0 0 0 1.414-1.414L13 11.586V8Z"
+                      clip-rule="evenodd"
+                    />
+                  </svg>
+                </div>
+                <input
+                  type="time"
+                  id="checkIn"
+                  {...register("checkIn")}
+                  className="peer block w-full px-2.5 pb-2.5 pt-4 text-sm text-gray-900 bg-transparent border border-gray-300 rounded-lg appearance-none focus:outline-none focus:ring-0 focus:border-blue-500"
+                  placeholder=" "
+                />
+
+                <label
+                  htmlFor="checkIn"
+                  className="absolute text-sm text-gray-500 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white px-2 peer-placeholder-shown:scale-100 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 peer-focus:text-blue-500 start-1"
+                >
+                  Check-In Time
+                </label>
+                {errors.checkIn && (
+                  <p className="mt-1 text-sm text-red-500">
+                    {errors.checkIn.message}
+                  </p>
+                )}
+              </div>
 
               <div className="relative w-full">
-                    <div className="absolute inset-y-0 end-0 top-0 flex items-center pe-3.5 pointer-events-none">
-                <svg className="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
-                    <path fill-rule="evenodd" d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm11-4a1 1 0 1 0-2 0v4a1 1 0 0 0 .293.707l3 3a1 1 0 0 0 1.414-1.414L13 11.586V8Z" clip-rule="evenodd"/>
-                </svg>
-            </div>
-  <input
-    type="time"
-    id="checkOut"
-    {...register("checkOut")}
-    className="peer block w-full px-2.5 pb-2.5 pt-4 text-sm text-gray-900 bg-transparent border border-gray-300 rounded-lg appearance-none focus:outline-none focus:ring-0 focus:border-blue-500"
-    placeholder=" "
-  />
-  <label
-    htmlFor="checkOut"
-    className="absolute text-sm text-gray-500 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white px-2 peer-placeholder-shown:scale-100 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 peer-focus:text-blue-500 start-1"
-  >
-    Check-Out Time
-  </label>
-  {errors.checkOut && (
-    <p className="mt-1 text-sm text-red-500">{errors.checkOut.message}</p>
-  )}
-</div>
-
+                <div className="absolute inset-y-0 end-0 top-0 flex items-center pe-3.5 pointer-events-none">
+                  <svg
+                    className="w-4 h-4 text-gray-500 dark:text-gray-400"
+                    aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12Zm11-4a1 1 0 1 0-2 0v4a1 1 0 0 0 .293.707l3 3a1 1 0 0 0 1.414-1.414L13 11.586V8Z"
+                      clip-rule="evenodd"
+                    />
+                  </svg>
+                </div>
+                <input
+                  type="time"
+                  id="checkOut"
+                  {...register("checkOut")}
+                  className="peer block w-full px-2.5 pb-2.5 pt-4 text-sm text-gray-900 bg-transparent border border-gray-300 rounded-lg appearance-none focus:outline-none focus:ring-0 focus:border-blue-500"
+                  placeholder=" "
+                />
+                <label
+                  htmlFor="checkOut"
+                  className="absolute text-sm text-gray-500 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white px-2 peer-placeholder-shown:scale-100 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 peer-focus:text-blue-500 start-1"
+                >
+                  Check-Out Time
+                </label>
+                {errors.checkOut && (
+                  <p className="mt-1 text-sm text-red-500">
+                    {errors.checkOut.message}
+                  </p>
+                )}
+              </div>
             </div>
 
             <div
@@ -658,16 +682,17 @@ const MarkLearner = () => {
           >
             Back
           </button>
-         <button
-  type="submit"
-  disabled={loading}
-  className={`px-6 py-3 text-white rounded-md ${
-    loading ? "bg-blue-300 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"
-  }`}
->
-  {loading ? "Submitting..." : "Submit"}
-</button>
-
+          <button
+            type="submit"
+            disabled={loading}
+            className={`px-6 py-3 text-white rounded-md ${
+              loading
+                ? "bg-blue-300 cursor-not-allowed"
+                : "bg-blue-600 hover:bg-blue-700"
+            }`}
+          >
+            {loading ? "Submitting..." : "Submit"}
+          </button>
         </div>
       </form>
 
@@ -694,7 +719,7 @@ const MarkLearner = () => {
           </div>
         </div>
       )}
-  
+
       {/* ❌ Error Toasts */}
       {errorMessages.length > 0 && (
         <div className="fixed z-50 w-full max-w-xs space-y-2 top-32 right-5">
@@ -705,7 +730,11 @@ const MarkLearner = () => {
               role="alert"
             >
               <div className="inline-flex items-center justify-center w-8 h-8 mr-3 text-red-600 bg-white rounded-full">
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <svg
+                  className="w-5 h-5"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
                   <path
                     fillRule="evenodd"
                     d="M10 18a8 8 0 100-16 8 8 0 000 16zm-1-4h2v2h-2v-2zm0-8h2v6h-2V6z"
@@ -718,7 +747,6 @@ const MarkLearner = () => {
           ))}
         </div>
       )}
-
     </div>
   );
 };

@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { URL } from "../../../App";
 import { extractDriveFileId } from "../../../Components/ImageProxyRouterFunction/funtion.js";
 import { useRole } from "../../../Components/AuthContext/AuthContext";
+import branchHeaders from "../../../Components/utils/headers.jsx";
 
 const validationSchema = yup.object().shape({
   selectedInstructor: yup.string().required("Please select an instructor"),
@@ -56,9 +57,7 @@ const MarkIns = () => {
   useEffect(() => {
     const fetchInstructors = async () => {
       try {
-        const response = await axios.get(`${URL}/api/user/instructors`, {
-          withCredentials: true,
-        });
+        const response = await axios.get(`${URL}/api/v2/instructor`, branchHeaders());
         setInstructors(response.data.instructorsWithDecrypted);
       } catch (err) {
         if (
@@ -91,9 +90,7 @@ const MarkIns = () => {
     };
 
     try {
-      await axios.post(`${URL}/api/instructor-attendance`, payload, {
-        withCredentials: true,
-      });
+      await axios.post(`${URL}/api/v2/instructor-attendance`, payload, branchHeaders());
       setToastOpen(true);
       reset(); // Reset form
       setTimeout(() => {

@@ -6,6 +6,8 @@ import { URL } from "../../../App";
 import Pagination from "../../../Components/Pagination";
 import { FaSyncAlt } from "react-icons/fa";
 import { useRole } from "../../../Components/AuthContext/AuthContext";
+import branchHeaders from "../../../Components/utils/headers";
+
 const SingleAttendance = () => {
    const {role, user,setUser,setRole,clearAuthState} =  useRole();
 
@@ -50,10 +52,9 @@ const SingleAttendance = () => {
         });
 
         const response = await axios.get(
-          `${URL}/api/learner-attendance/${id}?${queryParams}`,
+          `${URL}/api/v2/learner-attendance/${id}?${queryParams}`,
           {
-                       withCredentials: true,
-
+            ...branchHeaders(),
             signal: controller.signal,
           }
         );
