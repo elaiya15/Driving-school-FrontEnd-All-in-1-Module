@@ -84,14 +84,13 @@ const LearnerSinglePayment = () => {
     } catch (err) {
       if (err.name !== "CanceledError") {
         console.error(err);
-          // ✅ 401 handling
-           if (error.response?.status === 401|| error.response?.status === 403) {
-          setErrorMsg(error.response?.data?.message||error.response?.data?.error );
+        // ✅ 401 handling
+           if (err.response?.status === 401|| err.response?.status === 403) {
+          setErrorMsg(err.response?.data?.message||err.response?.data?.error );
           return setTimeout(() => {
             clearAuthState();
-            setErrorMsg("");
+            setErrorMsg();
           }, 2000);
-        }
         } else {
           const msg =
             err.response?.data?.message ||
