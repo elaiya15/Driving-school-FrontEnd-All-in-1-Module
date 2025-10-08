@@ -72,6 +72,38 @@ function Navbar({ setSidebarOpen, sidebarOpen }) {
     console.log(role);
   };
 
+  const handleMyProfile = () => {
+    console.log("branchId",branchId);
+
+    console.log(
+      "Navigating to profile for role:",
+      role,
+      "and user ID:",
+      user?.user_id
+    );
+    if (!user?.user_id) return; // Safety check if user is not available
+
+    switch (role) {
+      case "learner":
+        navigate(`/learner/profile/${user?.user_id}/view`);
+        break;
+      case "admin":
+        navigate(`/admin/profile/${branchId}/${user?.user_id}/view`);
+        break;
+      case "owner":
+        navigate(`/owner/profile/${user?.user_id}/view`);
+        break;
+      case "instructor":
+        navigate(`/instructor/profile/${user?.user_id}/view`);
+        break;
+      default:
+        console.warn("Unknown role:", role);
+        // optionally redirect to a fallback
+        navigate("/");
+        break;
+    }
+  };
+
   return (
     <React.Fragment>
       <nav className="fixed top-0 z-50 flex flex-col justify-center w-full h-20 bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700">
@@ -177,11 +209,12 @@ function Navbar({ setSidebarOpen, sidebarOpen }) {
                       {isLogin?.Name}
                       {/* <div className="block text-sm text-gray-500 truncate divide-y divide-gray-100 dark:divide-gray-600 dark:text-gray-400"> {isLogin?.role}</div> */}
                     </div>
-                    <div className="gap-2 px-4 text-sm text-gray-700 dark:text-gray-200 ">
+                    <div className="gap-2 px-4 text-sm text-gray-600 dark:text-gray-200 ">
                       {" "}
                       {isLogin?.role}
                     </div>
                   </div>
+
                   {branchId && role === "owner" && (
                     <div
                       className="flex items-center justify-start gap-2 px-2 py-1 text-sm text-gray-700 border-t border-gray-300 dark:text-gray-200 hover:bg-gray-100 hover:cursor-pointer dark:hover:bg-gray-600"
@@ -195,6 +228,15 @@ function Navbar({ setSidebarOpen, sidebarOpen }) {
                     </div>
                   )}
 
+                  <button
+                    onClick={() => {
+                      handleMyProfile();
+                      setDropdownOpen(false); 
+                    }}
+                    className="flex items-center w-full px-4 py-2 text-sm text-left text-gray-800 border-t border-gray-300 test-bold gap-x-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-red-400"
+                  >
+                    My Profile
+                  </button>
                   <button
                     onClick={() => {
                       setDropdownOpen(false);
@@ -307,7 +349,7 @@ function Navbar({ setSidebarOpen, sidebarOpen }) {
               <div className="flex justify-center gap-4">
                 <button
                   onClick={() => setSwitchOwner(false)}
-                 className="w-20 py-2.5 px-5 text-sm font-medium text-gray-700 bg-white rounded-lg border border-blue-300 hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-400 dark:border-blue-600 dark:hover:text-white dark:hover:bg-gray-700"
+                  className="w-20 py-2.5 px-5 text-sm font-medium text-gray-700 bg-white rounded-lg border border-blue-300 hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-400 dark:border-blue-600 dark:hover:text-white dark:hover:bg-gray-700"
                 >
                   No
                 </button>

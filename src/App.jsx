@@ -21,8 +21,10 @@ import SmsTable from "./Main/sms/SmsTable";
 import LearnerTable from "./Main/learner/LearnerTable";
 import LearnerDash from "./Components/LearnerDash";
 import InstructorDash from "./Components/InstructorDash";
-import LearnerProfile from "./Main/learner/LearnerProfile";
-import InstructorProfile from "./Main/instructor/InstructorProfile";
+// import LearnerProfile from "./Main/learner/LearnerProfile";
+import LearnerProfile from "./Main/learner/LearnerProfile.jsx";
+import LearnerProfileEdit from "./Main/learner/LearnerProfileEdit.jsx";
+// import InstructorProfile from "./Main/instructor/InstructorProfile";
 import Instructor from "./Components/Instructor";
 import Learner from "./Components/Learner";
 import NewRegistration from "./Main/learner/NewRegistration";
@@ -35,6 +37,8 @@ import AssignUpdate from "./Main/courseAssigned/AssignUpdate";
 import NewInsRegister from "./Main/instructor/NewInsRegister";
 import InsEdit from "./Main/instructor/InsEdit";
 import InsPreview from "./Main/instructor/InsPreview";
+import InstructorProfile from "./Main/instructor/InstructorProfile";
+import InstructorProfileEdit from "./Main/instructor/InstructorProfileEdit.jsx";
 import MarkLearner from "./Main/attendance/learner/MarkLearner";
 import MarkIns from "./Main/attendance/instructor/MarkIns";
 import AddPayment from "./Main/payment/AddPayment";
@@ -74,21 +78,30 @@ import Page404 from "./Components/Page404";
 import ProtectedRoute from "./Components/ProtectedRoute";
 import { RoleProvider } from "./Components/AuthContext/AuthContext.jsx";
 import OwnerDash from "./Main/Owner/ownerDashboard.jsx";
+import OwnerProfileEdit from "./Main/Owner/OwnerProfileEdit.jsx";
+import OwnerProfilePreview from "./Main/Owner/OwnerProfilePreview.jsx";
 import OwnerLayout from "./Main/Owner/OwnerLayout.jsx";
 import NetworkStatus from "./Components/NetworkStatus"; // Add this import
 import BranchList from "./Main/Owner/branchs.jsx";
 import BranchSingleView from "./Main/Owner/branchView.jsx";
 import BranchEdit from "./Main/Owner/branchEdit.jsx";
 import AddAdmin from "./Main/Owner/AddAdmin.jsx";
+import AdminProfilePreview from "./Main/Owner/AdminProfilePreview.jsx";
+import AdminProfileEdit from "./Main/Owner/AdminProfileEdit.jsx";
 import BranchAdminList from "./Main/Owner/branchAdminList.jsx";
 import BranchCreate from "./Main/Owner/AddBranch.jsx";
+import CreateAccount from "./Main/Owner/CreateOrganization.jsx";
 import AdminPreview from "./Main/Owner/AdminPreview.jsx";
 import AdminEdit from "./Main/Owner/AdminEdit.jsx";
 import OwnerGuard from "./OwnerGuard.jsx";
 import AdminGuard from "./AdminGuard.jsx";
 import BranchExpenses from "./Main/payment/BranchExpenses.jsx";
-
-
+import OrganizationProfileView from "./Main/Owner/OrganizationProfilePreview.jsx";
+import OrganizationProfileEdit from "./Main/Owner/OrganizationProfileEdit.jsx";
+import SubscriptionPlans from "./Components/utils/Subscription.jsx";
+import PaymentFailed from "./Components/utils/PaymentFailed.jsx";
+import PaymentSuccess from "./Components/utils/PaymentSuccess.jsx";
+import SubscriptionValidation from "./Components/utils/SubscriptionValidation.jsx";
 export const URL = import.meta.env.VITE_BACK_URL;
 
 function App() {
@@ -109,6 +122,10 @@ function App() {
         {/* Public Routes */}
         <Routes>
           <Route path="/" element={<LoginPage />} />
+          <Route path="/CreateAccount" element={<CreateAccount />} />
+          <Route path="/pay" element={<SubscriptionPlans />} />
+          <Route path="/payment-success" element={<PaymentSuccess />} />
+          <Route path="/payment-failed" element={<PaymentFailed />} />
           <Route path="/form" element={<Form14Register />} />
           <Route path="/form15" element={<Form15 />} />
           <Route path="/Driving5" element={<DrivingCertificateForm5 />} />
@@ -118,11 +135,13 @@ function App() {
             <Route
               path="owner"
               element={
+                <SubscriptionValidation>
                 <ProtectedRoute allowedRoles={["owner"]}>
                   <OwnerLayout>
                     <AdminDash />
                   </OwnerLayout>
                 </ProtectedRoute>
+                  </SubscriptionValidation>
               }
             >
               <Route index element={<Navigate to="dashboard" replace />} />
@@ -130,8 +149,7 @@ function App() {
               <Route path="branches" element={<BranchList />} />
               <Route path="branches/create" element={<BranchCreate />} />
               <Route path="branches/:id/view" element={<BranchSingleView />} />
-              <Route path="branches/:id/edit" element={<BranchEdit/>} />
-
+              <Route path="branches/:id/edit" element={<BranchEdit />} />
               <Route path="branch-admin" element={<BranchAdminList />} />
               <Route path="add-admin" element={<AddAdmin />} />
               <Route
@@ -147,16 +165,27 @@ function App() {
                 <Route path="new" element={<AddCourse />} />
                 <Route path=":id/edit" element={<UpdateCourse />} />
               </Route>
+                <Route path="profile">
+                  <Route path=":id/edit" element={<OwnerProfileEdit />} />
+                  <Route path=":id/view" element={<OwnerProfilePreview />} />
+                </Route>
+                <Route path="organization/profile">
+                  <Route path=":id/edit" element={<OrganizationProfileEdit />} />
+                  <Route path=":id/view" element={<OrganizationProfileView />} />
+                </Route>
             </Route>
           </Route>
+          {/* /////////////////////////////////////////////////////////////////////////// */}
           {/* Admin Protected Routes */}
           <Route element={<AdminGuard />}>
             <Route
               path="admin"
               element={
+                <SubscriptionValidation>
                 <ProtectedRoute allowedRoles={["admin", "owner"]}>
                   <AdminDash />
                 </ProtectedRoute>
+              </SubscriptionValidation>
               }
             >
               <Route index element={<Navigate to="dashboard" replace />} />
@@ -202,13 +231,13 @@ function App() {
                   <Route path="mark" element={<MarkIns />} />
                 </Route>
               </Route>
-               <Route path="account">
-              <Route path="payment" element={<PaymentContainer />}>
-                <Route path="list" element={<PaymentTable />} />
-                <Route path="add" element={<AddPayment />} />
-              </Route>
+              <Route path="account">
+                <Route path="payment" element={<PaymentContainer />}>
+                  <Route path="list" element={<PaymentTable />} />
+                  <Route path="add" element={<AddPayment />} />
+                </Route>
 
-             <Route path="expenses" element={< BranchExpenses />} />
+                <Route path="expenses" element={<BranchExpenses />} />
               </Route>
 
               <Route path="test-details" element={<TestContainer />}>
@@ -221,16 +250,29 @@ function App() {
                 <Route path="add" element={<SmsAdd />} />
                 <Route path=":id/edit" element={<SmsSetting />} />
               </Route>
+              <Route path="profile">
+                <Route
+                  path=":branchId/:id/view"
+                  element={<AdminProfilePreview />}
+                />
+                <Route
+                  path=":branchId/:id/edit"
+                  element={<AdminProfileEdit />}
+                />
+              </Route>
             </Route>
           </Route>
-
+{/* ////////////////////////////////////////////////////////////////////////// */}
           {/* Learner Protected Routes */}
           <Route
             path="learner"
             element={
+                
+                  <SubscriptionValidation>
               <ProtectedRoute allowedRoles={["learner"]}>
                 <Learner />
               </ProtectedRoute>
+               </SubscriptionValidation>
             }
           >
             <Route index element={<Navigate to="learnerDash" replace />} />
@@ -238,17 +280,28 @@ function App() {
             <Route path="attendance" element={<LearnerSingleAttendance />} />
             <Route path="payment" element={<LearnerSinglePayment />} />
             <Route path="test-details" element={<LearnerSingleTest />} />
-            <Route path="profile" element={<LearnerProfile />} />
+            {/* <Route path="profile" element={<LearnerProfile />} /> */}
             <Route path="course" element={<LearnerSingleAssign />} />
+            <Route path="profile">
+              {/* <Route path=":id/edit" element={<LearnerProfileEdit />} /> */}
+              <Route
+                path=":admissionNumber/:id/edit"
+                element={<LearnerProfileEdit />}
+              />
+              <Route path=":id/view" element={<LearnerProfile />} />
+            </Route>
           </Route>
 
+          {/* /////////////////////////////////////////////////////////////////////////// */}
           {/* instructor Protected Routes */}
           <Route
             path="instructor"
             element={
+                 <SubscriptionValidation>
               <ProtectedRoute allowedRoles={["instructor"]}>
                 <Instructor />
               </ProtectedRoute>
+              </SubscriptionValidation>
             }
           >
             <Route index element={<Navigate to="instructorDash" replace />} />
@@ -261,7 +314,11 @@ function App() {
               <Route path="list" element={<InstructorLearnerPayments />} />
               <Route path="add" element={<InsLearnerAddPayments />} />
             </Route>
-            <Route path="profile" element={<InstructorProfile />} />
+            {/* <Route path="profile" element={<InstructorProfile />} /> */}
+            <Route path="profile">
+              <Route path=":id/edit" element={<InstructorProfileEdit />} />
+              <Route path=":id/view" element={<InstructorProfile />} />
+            </Route>
           </Route>
         </Routes>
       </RoleProvider>

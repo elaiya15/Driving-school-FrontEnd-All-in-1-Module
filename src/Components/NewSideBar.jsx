@@ -20,12 +20,13 @@ import { getBranchSession } from "./utils/BranchCookie";
 
 function NewSidebar({ isOpen, onClose }) {
   const sidebarRef = useRef(null);
-  const { role, isLoading, clearAuthState } = useRole();
+  const {user, role, isLoading, clearAuthState } = useRole();
   const navigate = useNavigate();
   const location = useLocation();
+console.log(user);
 
   const [showLogoutModal, setShowLogoutModal] = useState(false);
-  const [open, setOpen] = useState(false);           // Attendance dropdown
+  const [open, setOpen] = useState(false); // Attendance dropdown
   const [accountOpen, setAccountOpen] = useState(false); // ✅ Account dropdown
 
   useEffect(() => initFlowbite(), []);
@@ -69,7 +70,11 @@ function NewSidebar({ isOpen, onClose }) {
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (isOpen && sidebarRef.current && !sidebarRef.current.contains(event.target)) {
+      if (
+        isOpen &&
+        sidebarRef.current &&
+        !sidebarRef.current.contains(event.target)
+      ) {
         onClose();
       }
     };
@@ -96,13 +101,15 @@ function NewSidebar({ isOpen, onClose }) {
 
         <div className="flex flex-col justify-between h-full px-3 pb-5 overflow-y-auto pt-28 dark:bg-blue-800">
           <ul className="space-y-2 font-normal">
-            {(role === "owner" && !getBranchSession()) && (
+            {role === "owner" && !getBranchSession() && (
               <>
                 <li>
                   <Link
                     to="/owner"
                     onClick={handleLinkClick}
-                    className={`${isActive("/owner/dashboard")} flex items-center p-2 rounded-lg group`}
+                    className={`${isActive(
+                      "/owner/dashboard"
+                    )} flex items-center p-2 rounded-lg group`}
                   >
                     <FaTachometerAlt className="text-xl" />
                     <span className="ms-4">Owner Dashboard</span>
@@ -112,7 +119,9 @@ function NewSidebar({ isOpen, onClose }) {
                   <Link
                     to="/owner/branches"
                     onClick={handleLinkClick}
-                    className={`${isActive("/owner/branches")} flex items-center p-2 rounded-lg group`}
+                    className={`${isActive(
+                      "/owner/branches"
+                    )} flex items-center p-2 rounded-lg group`}
                   >
                     <FaSitemap className="text-xl" />
                     <span className="ms-4">Branch</span>
@@ -122,7 +131,9 @@ function NewSidebar({ isOpen, onClose }) {
                   <Link
                     to="/owner/branch-admin"
                     onClick={handleLinkClick}
-                    className={`${isActive("/owner/branch-admin")} flex items-center p-2 rounded-lg group`}
+                    className={`${isActive(
+                      "/owner/branch-admin"
+                    )} flex items-center p-2 rounded-lg group`}
                   >
                     <FaUsersCog className="text-xl" />
                     <span className="ms-4">Branch Admins</span>
@@ -132,10 +143,24 @@ function NewSidebar({ isOpen, onClose }) {
                   <Link
                     to="/owner/Course/list"
                     onClick={handleLinkClick}
-                    className={`${isActive("/owner/Course")} flex items-center p-2 rounded-lg group`}
+                    className={`${isActive(
+                      "/owner/Course"
+                    )} flex items-center p-2 rounded-lg group`}
                   >
                     <FaBook className="text-xl" />
                     <span className="ms-4">Course</span>
+                  </Link>
+                </li>
+                  <li>
+                  <Link
+                    onClick={handleLinkClick}
+                    to={`/owner/organization/profile/${user.organizationId}/view`}
+                    className={`${isActive(
+                      "/owner/organization/profile"
+                    )} flex items-center p-2 rounded-lg group`}
+                  >
+                    <FaUser className="text-xl" />
+                    <span className="ms-4">Organization Profile</span>
                   </Link>
                 </li>
               </>
@@ -147,7 +172,9 @@ function NewSidebar({ isOpen, onClose }) {
                   <Link
                     to="/admin/dashboard"
                     onClick={handleLinkClick}
-                    className={`${isActive("/admin/dashboard")} flex items-center p-2 rounded-lg group`}
+                    className={`${isActive(
+                      "/admin/dashboard"
+                    )} flex items-center p-2 rounded-lg group`}
                   >
                     <FaTachometerAlt className="text-xl" />
                     <span className="ms-4">Dashboard</span>
@@ -159,7 +186,9 @@ function NewSidebar({ isOpen, onClose }) {
                   <Link
                     to="/admin/learner/list"
                     onClick={handleLinkClick}
-                    className={`${isActive("/admin/learner")} flex items-center p-2 rounded-lg group`}
+                    className={`${isActive(
+                      "/admin/learner"
+                    )} flex items-center p-2 rounded-lg group`}
                   >
                     <FaUser className="text-xl" />
                     <span className="ms-4">Learner</span>
@@ -169,7 +198,9 @@ function NewSidebar({ isOpen, onClose }) {
                   <Link
                     to="/admin/instructor/list"
                     onClick={handleLinkClick}
-                    className={`${isActive("/admin/instructor")} flex items-center p-2 rounded-lg group`}
+                    className={`${isActive(
+                      "/admin/instructor"
+                    )} flex items-center p-2 rounded-lg group`}
                   >
                     <FaChalkboardTeacher className="text-xl" />
                     <span className="ms-4">Instructor</span>
@@ -179,7 +210,9 @@ function NewSidebar({ isOpen, onClose }) {
                   <Link
                     to="/admin/staff/list"
                     onClick={handleLinkClick}
-                    className={`${isActive("/admin/staff")} flex items-center p-2 rounded-lg group`}
+                    className={`${isActive(
+                      "/admin/staff"
+                    )} flex items-center p-2 rounded-lg group`}
                   >
                     <FaUserShield className="text-xl" />
                     <span className="ms-4">Staff</span>
@@ -191,7 +224,9 @@ function NewSidebar({ isOpen, onClose }) {
                   <Link
                     to="/admin/course-assigned/list"
                     onClick={handleLinkClick}
-                    className={`${isActive("/admin/course-assigned")} flex items-center p-2 rounded-lg group`}
+                    className={`${isActive(
+                      "/admin/course-assigned"
+                    )} flex items-center p-2 rounded-lg group`}
                   >
                     <FaClipboardCheck className="text-xl" />
                     <span className="ms-4">Course-Assigned</span>
@@ -202,12 +237,16 @@ function NewSidebar({ isOpen, onClose }) {
                 <li>
                   <button
                     onClick={() => setOpen(!open)}
-                    className={`${isActive("/admin/attendance")} flex items-center w-full p-2 rounded-lg group`}
+                    className={`${isActive(
+                      "/admin/attendance"
+                    )} flex items-center w-full p-2 rounded-lg group`}
                   >
                     <FaClipboardCheck className="text-xl" />
                     <span className="ms-4">Attendance</span>
                     <svg
-                      className={`w-3 h-3 ms-auto transition-transform ${open ? "rotate-180" : ""}`}
+                      className={`w-3 h-3 ms-auto transition-transform ${
+                        open ? "rotate-180" : ""
+                      }`}
                       xmlns="http://www.w3.org/2000/svg"
                       fill="none"
                       viewBox="0 0 10 6"
@@ -221,12 +260,18 @@ function NewSidebar({ isOpen, onClose }) {
                       />
                     </svg>
                   </button>
-                  <ul className={`${open ? "block" : "hidden"} py-2 pl-10 space-y-2`}>
+                  <ul
+                    className={`${
+                      open ? "block" : "hidden"
+                    } py-2 pl-10 space-y-2`}
+                  >
                     <li>
                       <Link
                         to="/admin/attendance/learner/list"
                         onClick={handleLinkClick}
-                        className={`${isActive("/admin/attendance/learner")} flex items-center p-2 rounded-lg group`}
+                        className={`${isActive(
+                          "/admin/attendance/learner"
+                        )} flex items-center p-2 rounded-lg group`}
                       >
                         <FaUser className="text-xl" />
                         <span className="ms-5">Learner</span>
@@ -236,7 +281,9 @@ function NewSidebar({ isOpen, onClose }) {
                       <Link
                         to="/admin/attendance/instructor/list"
                         onClick={handleLinkClick}
-                        className={`${isActive("/admin/attendance/instructor")} flex items-center p-2 rounded-lg group`}
+                        className={`${isActive(
+                          "/admin/attendance/instructor"
+                        )} flex items-center p-2 rounded-lg group`}
                       >
                         <FaChalkboardTeacher className="text-xl" />
                         <span className="ms-5">Instructor</span>
@@ -246,7 +293,9 @@ function NewSidebar({ isOpen, onClose }) {
                       <Link
                         to="/admin/attendance/staff/list"
                         onClick={handleLinkClick}
-                        className={`${isActive("/admin/attendance/staff")} flex items-center p-2 rounded-lg group`}
+                        className={`${isActive(
+                          "/admin/attendance/staff"
+                        )} flex items-center p-2 rounded-lg group`}
                       >
                         <FaUserShield className="text-xl" />
                         <span className="ms-5">Staff</span>
@@ -259,7 +308,9 @@ function NewSidebar({ isOpen, onClose }) {
                 <li>
                   <button
                     onClick={() => setAccountOpen(!accountOpen)}
-                    className={`${isActive("/admin/account")} flex items-center w-full p-2 rounded-lg group`}
+                    className={`${isActive(
+                      "/admin/account"
+                    )} flex items-center w-full p-2 rounded-lg group`}
                   >
                     <FaMoneyCheckAlt className="text-xl" />
                     <span className="ms-4">Account</span>
@@ -280,13 +331,19 @@ function NewSidebar({ isOpen, onClose }) {
                       />
                     </svg>
                   </button>
-                  <ul className={`${accountOpen ? "block" : "hidden"} py-2 pl-10 space-y-2`}>
-                    <li>
-                     <Link
-                    to="/admin/account/payment/list"
-                    onClick={handleLinkClick}
-                    className={`${isActive("/admin/account/payment/list")} flex items-center p-2 rounded-lg group`}
+                  <ul
+                    className={`${
+                      accountOpen ? "block" : "hidden"
+                    } py-2 pl-10 space-y-2`}
                   >
+                    <li>
+                      <Link
+                        to="/admin/account/payment/list"
+                        onClick={handleLinkClick}
+                        className={`${isActive(
+                          "/admin/account/payment/list"
+                        )} flex items-center p-2 rounded-lg group`}
+                      >
                         <FaMoneyCheckAlt className="text-xl" />
                         <span className="ms-5">Income</span>
                       </Link>
@@ -295,7 +352,9 @@ function NewSidebar({ isOpen, onClose }) {
                       <Link
                         to="/admin/account/expenses"
                         onClick={handleLinkClick}
-                        className={`${isActive("/admin/account/expenses")} flex items-center p-2 rounded-lg group`}
+                        className={`${isActive(
+                          "/admin/account/expenses"
+                        )} flex items-center p-2 rounded-lg group`}
                       >
                         <FaMoneyCheckAlt className="text-xl" />
                         <span className="ms-5">Expense</span>
@@ -318,7 +377,9 @@ function NewSidebar({ isOpen, onClose }) {
                   <Link
                     to="/admin/test-details/list"
                     onClick={handleLinkClick}
-                    className={`${isActive("/admin/test-details")} flex items-center p-2 rounded-lg group`}
+                    className={`${isActive(
+                      "/admin/test-details"
+                    )} flex items-center p-2 rounded-lg group`}
                   >
                     <FaFileAlt className="text-xl" />
                     <span className="ms-4">Test Details</span>
@@ -328,7 +389,134 @@ function NewSidebar({ isOpen, onClose }) {
             )}
 
             {/* --- Other Roles (Learner / Instructor) remain unchanged --- */}
-
+            {role === "learner" && (
+              <>
+                <li>
+                  <Link
+                    onClick={handleLinkClick}
+                    to="/learner/LearnerDash"
+                    className={`${isActive(
+                      "/learner/LearnerDash"
+                    )} flex items-center p-2 rounded-lg group`}
+                  >
+                    <FaTachometerAlt className="text-xl" />
+                    <span className="ms-4">Dashboard</span>
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    onClick={handleLinkClick}
+                    to="/learner/attendance"
+                    className={`${isActive(
+                      "/learner/attendance"
+                    )} flex items-center p-2 rounded-lg group`}
+                  >
+                    <FaClipboardCheck className="text-xl" />
+                    <span className="ms-4">Attendance</span>
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    onClick={handleLinkClick}
+                    to="/learner/payment"
+                    className={`${isActive(
+                      "/learner/payment"
+                    )} flex items-center p-2 rounded-lg group`}
+                  >
+                    <FaMoneyCheckAlt className="text-xl" />
+                    <span className="ms-4">Payment</span>
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    onClick={handleLinkClick}
+                    to="/learner/test-details"
+                    className={`${isActive(
+                      "/learner/test-details"
+                    )} flex items-center p-2 rounded-lg group`}
+                  >
+                    <FaFileAlt className="text-xl" />
+                    <span className="ms-4">Test Details</span>
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    onClick={handleLinkClick}
+                    to="/learner/Course"
+                    className={`${isActive(
+                      "/learner/Course"
+                    )} flex items-center p-2 rounded-lg group`}
+                  >
+                    <FaBook className="text-xl" />
+                    <span className="ms-4">Course Details</span>
+                  </Link>
+                </li>
+                {/* <li>
+                  <Link
+                    onClick={handleLinkClick}
+                    to="/learner/profile"
+                    className={`${isActive(
+                      "/learner/profile"
+                    )} flex items-center p-2 rounded-lg group`}
+                  >
+                    <FaUser className="text-xl" />
+                    <span className="ms-4">Profile</span>
+                  </Link>
+                </li> */}
+              </>
+            )}
+            {role === "instructor" && (
+              <>
+                <li>
+                  <Link
+                    onClick={handleLinkClick}
+                    to="/instructor/instructorDash"
+                    className={`${isActive(
+                      "/instructor/instructorDash"
+                    )} flex items-center p-2 rounded-lg group`}
+                  >
+                    <FaTachometerAlt className="text-xl" />
+                    <span className="ms-4">Dashboard</span>
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    onClick={handleLinkClick}
+                    to="/instructor/attendance/list"
+                    className={`${isActive(
+                      "/instructor/attendance"
+                    )} flex items-center p-2 rounded-lg group`}
+                  >
+                    <FaClipboardCheck className="text-xl" />
+                    <span className="ms-4">Attendance</span>
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    onClick={handleLinkClick}
+                    to="/instructor/payment/list"
+                    className={`${isActive(
+                      "/instructor/payment"
+                    )} flex items-center p-2 rounded-lg group`}
+                  >
+                    <FaMoneyCheckAlt className="text-xl" />
+                    <span className="ms-4">Payment</span>
+                  </Link>
+                </li>
+                <li>
+                  {/* <Link
+                    onClick={handleLinkClick}
+                    to="/instructor/profile"
+                    className={`${isActive(
+                      "/instructor/profile"
+                    )} flex items-center p-2 rounded-lg group`}
+                  >
+                    <FaUser className="text-xl" />
+                    <span className="ms-4">Profile</span>
+                  </Link> */}
+                </li>
+              </>
+            )}
             <li>
               <button
                 onClick={() => setShowLogoutModal(true)}

@@ -105,6 +105,14 @@ const LearnerProfile = () => {
             </button>
             <h3 className="text-xl font-semibold">Learner Details</h3>
           </div>
+             <button
+          onClick={() =>
+            navigate(`/learner/profile/${learner.admissionNumber}/${learner._id}/edit`)
+          }
+          className="px-4 py-2 text-white transition bg-blue-500 rounded-md hover:bg-blue-600"
+        >
+          Edit
+        </button>
         </div>
 
         <div className="grid w-full grid-cols-1 gap-6 md:grid-cols-2">

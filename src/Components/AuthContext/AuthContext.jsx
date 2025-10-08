@@ -9,7 +9,7 @@ export const RoleProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [role, setRole] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-   const navigate= useNavigate()
+   const navigate= useNavigate();
 
  const clearAuthState = async () => {
   try {
@@ -33,14 +33,29 @@ export const RoleProvider = ({ children }) => {
 };
 
   useEffect(() => {
+
     const fetchUser = async () => {
       setIsLoading(true);
       try {
         const res = await axios.get(`${import.meta.env.VITE_BACK_URL || ""}/api/user/me`, {
           withCredentials: true,
         });
-        setUser(res.data.user);
-        setRole(res.data.user.role.toLowerCase());
+         const userData = res.data.user;
+        setUser(userData);
+        setRole(userData.role?.toLowerCase());
+
+        // ✅ Check subscription from userData
+      if (userData?.subscription) {
+        const { status, endedAt } = userData.subscription;
+
+        if (status !== "paid" || new Date() > new Date(endedAt)) {
+          console.warn("Subscription expired or inactive.");
+        //   navigate("/pay");
+          return; // stop further processing
+        }
+      }
+
+        // Set branchId in session if available
         if(res.data.user.branchId){
             setBranchSession(res.data.user.branchId);
         }

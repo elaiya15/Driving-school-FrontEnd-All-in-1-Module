@@ -54,8 +54,10 @@ export default function OwnerDashboard() {
       } catch (error) {
         console.error("Error loading dashboard:", error);
 
-        if (error.response?.status === 401) {
-          setErrorMsg("Credential Invalid or Expired. Please login again.");
+                // ✅ 401 handling
+
+            if (error.response?.status === 401|| error.response?.status === 403) {
+          setErrorMsg(error.response?.data?.message||error.response?.data?.error );
           return setTimeout(() => {
             clearAuthState();
             setErrorMsg("");

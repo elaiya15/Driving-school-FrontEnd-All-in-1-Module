@@ -52,11 +52,17 @@ const InstructorProfile = () => {
       <section className="flex flex-col p-5 mb-20 space-y-10 bg-white rounded-t-lg">
         <div className="flex items-center justify-between w-full">
           <div className="flex items-center space-x-3">
-            <button onClick={() => navigate(-1)}>
+            {/* <button onClick={() => navigate(-1)}>
               <i className="text-xl fa-solid fa-arrow-left-long"></i>
-            </button>
+            </button> */}
             <h3 className="text-xl font-bold sm:text-2xl">Instructor Details</h3>
           </div>
+          <button
+            onClick={() => navigate(`/instructor/profile/${instructor._id}/edit`)}
+            className="px-4 py-2 text-white transition duration-300 bg-blue-500 rounded-md hover:bg-blue-600"
+          >
+            Edit
+          </button>
         </div>
 
         <div className="grid w-full grid-cols-1 gap-6 md:grid-cols-2">

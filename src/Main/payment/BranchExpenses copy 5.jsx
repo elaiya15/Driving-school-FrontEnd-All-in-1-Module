@@ -28,12 +28,14 @@ const BranchExpenses = () => {
   const [expenses, setExpenses] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+
   const [modalOpen, setModalOpen] = useState(false);
   const [editingExpense, setEditingExpense] = useState(null);
   const [formData, setFormData] = useState({
@@ -45,8 +47,10 @@ const BranchExpenses = () => {
 
   const itemsPerPage = 10;
   const branchId = branchHeaders().headers["x-branch-id"];
+
   const abortRef = useRef(null);
   const debounceRef = useRef(null);
+  const searchBoxRef = useRef(null);
 
   // ---- URL helper
   const updateURL = (params) => {
@@ -60,32 +64,26 @@ const BranchExpenses = () => {
     navigate({ search: query.toString() }, { replace: true });
   };
 
-  // ---- Fetch expenses with overrides to avoid stale state
+  // ---- Fetch expenses
   const fetchExpenses = useCallback(
-    async ({ signal, search: s, category: c, fromDate: f, toDate: t, page: p } = {}) => {
+    async ({ signal }) => {
       try {
         setLoading(true);
 
-        // Don't fetch if only fromDate is selected
-        const finalFrom = f !== undefined ? f : fromDate;
-        const finalTo = t !== undefined ? t : toDate;
-        if (finalFrom && !finalTo) {
+        // Only fetch if both dates are selected (or no dates)
+        if (fromDate && !toDate) {
           setLoading(false);
           return;
         }
 
         const qs = new URLSearchParams();
-        const finalSearch = s !== undefined ? s : search;
-        const finalCategory = c !== undefined ? c : categoryFilter;
-        const finalPage = p !== undefined ? p : currentPage;
-
-        if (finalSearch) qs.set("search", finalSearch);
-        if (finalCategory) qs.set("category", finalCategory);
-        if (finalFrom && finalTo) {
-          qs.set("from", finalFrom);
-          qs.set("to", finalTo);
+        if (search) qs.set("search", search);
+        if (categoryFilter) qs.set("category", categoryFilter);
+        if (fromDate && toDate) {
+          qs.set("from", fromDate);
+          qs.set("to", toDate);
         }
-        qs.set("page", finalPage);
+        qs.set("page", currentPage);
         qs.set("limit", itemsPerPage);
 
         const res = await axios.get(
@@ -113,83 +111,37 @@ const BranchExpenses = () => {
     [search, categoryFilter, fromDate, toDate, currentPage, branchId, clearAuthState, navigate]
   );
 
-  // ---- Debounced search only
- useEffect(() => {
-  if (debounceRef.current) clearTimeout(debounceRef.current);
-  const controller = new AbortController();
-  abortRef.current = controller;
+  // ---- Debounced search + instant fetch
+  const triggerFetch = useCallback(
+    (instant = false) => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+      if (abortRef.current) abortRef.current.abort();
 
-  debounceRef.current = setTimeout(() => {
-    fetchExpenses({ signal: controller.signal, search });
-  }, 1500);
+      const controller = new AbortController();
+      abortRef.current = controller;
 
-  return () => clearTimeout(debounceRef.current);
-}, [search]);
-  // ---- Instant triggers for other filters
-  const handleCategoryChange = (value) => {
-    setCategoryFilter(value);
-    setCurrentPage(1);
-    updateURL({ search, category: value, fromDate, toDate, page: 1 });
+      if (fromDate && !toDate) return;
 
-    fetchExpenses({
-      signal: new AbortController().signal,
-      category: value,
-      search,
-      fromDate,
-      toDate,
-      page: 1,
-    });
-  };
+      if (instant) {
+        fetchExpenses({ signal: controller.signal });
+      } else {
+        debounceRef.current = setTimeout(() => {
+          fetchExpenses({ signal: controller.signal });
+        }, 1500);
+      }
+    },
+    [fetchExpenses, fromDate, toDate]
+  );
 
-  const handleFromDateChange = (value) => {
-    setFromDate(value);
-    if (toDate && new Date(toDate) < new Date(value)) setToDate("");
-    setCurrentPage(1);
+  // ---- Effects
+  useEffect(() => {
+    triggerFetch();
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+      if (abortRef.current) abortRef.current.abort();
+    };
+  }, [search, categoryFilter, fromDate, toDate, currentPage, triggerFetch]);
 
-    updateURL({ search, category: categoryFilter, fromDate: value, toDate, page: 1 });
-
-    fetchExpenses({
-      signal: new AbortController().signal,
-      search,
-      category: categoryFilter,
-      fromDate: value,
-      toDate,
-      page: 1,
-    });
-  };
-
-  const handleToDateChange = (value) => {
-    setToDate(value);
-    setCurrentPage(1);
-
-    updateURL({ search, category: categoryFilter, fromDate, toDate: value, page: 1 });
-
-    fetchExpenses({
-      signal: new AbortController().signal,
-      search,
-      category: categoryFilter,
-      fromDate,
-      toDate: value,
-      page: 1,
-    });
-  };
-
-  const handleClearSearch = () => {
-    setSearch("");
-    setCurrentPage(1);
-    updateURL({ search: "", category: categoryFilter, fromDate, toDate, page: 1 });
-
-    fetchExpenses({
-      signal: new AbortController().signal,
-      search: "",
-      category: categoryFilter,
-      fromDate,
-      toDate,
-      page: 1,
-    });
-  };
-
-  // ---- Load URL params on mount
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     setSearch(params.get("search") || "");
@@ -199,29 +151,18 @@ const BranchExpenses = () => {
     setCurrentPage(parseInt(params.get("page")) || 1);
   }, [location.search]);
 
-  // ---- Error auto-clear
   useEffect(() => {
     if (!error) return;
     const t = setTimeout(() => setError(""), 4000);
     return () => clearTimeout(t);
   }, [error]);
 
-  // ---- Pagination handler
+  // ---- Handlers
   const handlePageChange = (p) => {
     setCurrentPage(p);
     updateURL({ search, category: categoryFilter, fromDate, toDate, page: p });
-
-    fetchExpenses({
-      signal: new AbortController().signal,
-      search,
-      category: categoryFilter,
-      fromDate,
-      toDate,
-      page: p,
-    });
   };
 
-  // ---- Modal
   const openModal = (exp = null) => {
     setEditingExpense(exp);
     setFormData({
@@ -252,17 +193,8 @@ const BranchExpenses = () => {
       setEditingExpense(null);
       setFormData({ category: "", description: "", amount: "", billCopy: null });
       setCurrentPage(1);
-
       updateURL({ search, category: categoryFilter, fromDate, toDate, page: 1 });
-
-      fetchExpenses({
-        signal: new AbortController().signal,
-        search,
-        category: categoryFilter,
-        fromDate,
-        toDate,
-        page: 1,
-      });
+      triggerFetch(true);
     } catch (err) {
       setError(err.response?.data?.message || "Save failed");
     } finally {
@@ -288,28 +220,33 @@ const BranchExpenses = () => {
         {/* Search + Clear */}
         <div className="relative w-full sm:w-64">
           <input
+            ref={searchBoxRef}
             type="text"
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setCurrentPage(1);
+              updateURL({ search: e.target.value, category: categoryFilter, fromDate, toDate, page: 1 });
+            }}
             onPaste={(e) => {
               const text = e.clipboardData?.getData("text") || "";
               e.preventDefault();
               setSearch(text);
-              fetchExpenses({
-                signal: new AbortController().signal,
-                search: text,
-                category: categoryFilter,
-                fromDate,
-                toDate,
-                page: 1,
-              });
+              setCurrentPage(1);
+              updateURL({ search: text, category: categoryFilter, fromDate, toDate, page: 1 });
+              triggerFetch(true);
             }}
             placeholder="Search category/description"
             className="w-full px-3 py-2 border rounded pr-8"
           />
           {search && (
             <button
-              onClick={handleClearSearch}
+              onClick={() => {
+                setSearch("");
+                setCurrentPage(1);
+                updateURL({ search: "", category: categoryFilter, fromDate, toDate, page: 1 });
+                triggerFetch(true);
+              }}
               className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
             >
               &times;
@@ -320,14 +257,17 @@ const BranchExpenses = () => {
         {/* Category Filter */}
         <select
           value={categoryFilter}
-          onChange={(e) => handleCategoryChange(e.target.value)}
+          onChange={(e) => {
+            setCategoryFilter(e.target.value);
+            setCurrentPage(1);
+            updateURL({ search, category: e.target.value, fromDate, toDate, page: 1 });
+            triggerFetch(true);
+          }}
           className="px-3 py-2 border rounded w-full sm:w-64"
         >
           <option value="">All Categories</option>
           {categoryOptions.map((opt) => (
-            <option key={opt} value={opt}>
-              {opt}
-            </option>
+            <option key={opt} value={opt}>{opt}</option>
           ))}
         </select>
 
@@ -335,14 +275,26 @@ const BranchExpenses = () => {
         <input
           type="date"
           value={fromDate}
-          onChange={(e) => handleFromDateChange(e.target.value)}
+          onChange={(e) => {
+            const v = e.target.value;
+            setFromDate(v);
+            if (toDate && v && new Date(toDate) < new Date(v)) setToDate("");
+            setCurrentPage(1);
+            updateURL({ search, category: categoryFilter, fromDate: v, toDate, page: 1 });
+            triggerFetch(true);
+          }}
           className="px-3 py-2 border rounded"
         />
         <input
           type="date"
           value={toDate}
           min={fromDate || undefined}
-          onChange={(e) => handleToDateChange(e.target.value)}
+          onChange={(e) => {
+            setToDate(e.target.value);
+            setCurrentPage(1);
+            updateURL({ search, category: categoryFilter, fromDate, toDate: e.target.value, page: 1 });
+            triggerFetch(true);
+          }}
           className="px-3 py-2 border rounded"
         />
       </div>
@@ -388,9 +340,7 @@ const BranchExpenses = () => {
                         >
                           View
                         </a>
-                      ) : (
-                        "—"
-                      )}
+                      ) : "—"}
                     </td>
                     <td className="px-4 py-2">{moment(e.createdAt).format("DD-MM-YYYY")}</td>
                     <td className="px-4 py-2 text-right">
@@ -432,57 +382,40 @@ const BranchExpenses = () => {
             <div className="space-y-3">
               <select
                 value={formData.category}
-                onChange={(e) =>
-                  setFormData({ ...formData, category: e.target.value })
-                }
+                onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                 className="w-full px-3 py-2 border rounded"
               >
                 <option value="">Select Category</option>
                 {categoryOptions.map((opt) => (
-                  <option key={opt} value={opt}>
-                    {opt}
-                  </option>
+                  <option key={opt} value={opt}>{opt}</option>
                 ))}
               </select>
+
               <textarea
                 placeholder="Description"
                 value={formData.description}
-                onChange={(e) =>
-                  setFormData({ ...formData, description: e.target.value })
-                }
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 className="w-full px-3 py-2 border rounded"
               />
+
               <input
                 type="number"
                 placeholder="Amount"
                 value={formData.amount}
-                onChange={(e) =>
-                  setFormData({ ...formData, amount: e.target.value })
-                }
+                onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
                 className="w-full px-3 py-2 border rounded"
               />
+
               <input
                 type="file"
                 accept="image/*,application/pdf"
-                onChange={(e) =>
-                  setFormData({ ...formData, billCopy: e.target.files[0] })
-                }
+                onChange={(e) => setFormData({ ...formData, billCopy: e.target.files[0] })}
                 className="w-full"
               />
             </div>
             <div className="flex justify-end mt-4 space-x-3">
-              <button
-                onClick={() => setModalOpen(false)}
-                className="px-4 py-2 bg-gray-300 rounded"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleSave}
-                className="px-4 py-2 text-white bg-blue-600 rounded"
-              >
-                Save
-              </button>
+              <button onClick={() => setModalOpen(false)} className="px-4 py-2 bg-gray-300 rounded">Cancel</button>
+              <button onClick={handleSave} className="px-4 py-2 text-white bg-blue-600 rounded">Save</button>
             </div>
           </div>
         </div>

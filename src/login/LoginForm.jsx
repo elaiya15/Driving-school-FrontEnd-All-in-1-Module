@@ -29,9 +29,6 @@ const LoginForm = () => {
         setBranchSession(user.branchId);
         // localStorage.setItem("branchId", user.branchId);
       }
-console.log('====================================');
-console.log(role);
-console.log('====================================');
       switch (role) {
     case "learner":
       navigate("/learner/LearnerDash");
@@ -276,6 +273,11 @@ setTimeout(() => {
           {errors.login && (
             <p className="mt-2 text-sm text-red-500">{errors.login}</p>
           )}
+           <div className="flex justify-end">
+            <button type="button"  onClick={() => navigate("/CreateAccount")}className="text-sm text-blue-500">
+                Create an account
+            </button>
+          </div>
         </form>
 
         {/* ✅ Error Toast */}

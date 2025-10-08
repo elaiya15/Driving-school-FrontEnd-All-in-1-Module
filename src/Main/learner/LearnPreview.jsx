@@ -138,7 +138,7 @@ return (
         </div>
         <button
           onClick={() =>
-            navigate(`/admin/learner/${learner.admissionNumber}/${learner._id}/edit`)
+            navigate(`/learner/profile/${learner.admissionNumber}/${learner._id}/edit`)
           }
           className="px-4 py-2 text-white transition bg-blue-500 rounded-md hover:bg-blue-600"
         >
