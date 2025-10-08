@@ -34,7 +34,7 @@ const MarkStaff = () => {
       }catch (err) {
          if (!axios.isCancel(err)) {
             // setError(err.response.data.message);
-        if (err.response &&(err.response.status === 401 ||err.response.data.message === "Invalid token")) {
+        if (err.response &&(err.response.status === 401 ||err.response.status === 403 ||err.response.data.message === "Invalid token")) {
             setTimeout(() => {
               clearAuthState();
               // navigate("/");

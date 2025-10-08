@@ -26,15 +26,17 @@ const InsLearnerAddPayment = () => {
         
         const response = await axios.get(`${URL}/api/v2/learner`, branchHeaders() );
         return setLearners(response.data.learners);
-      } catch (err) {
-         if (!axios.isCancel(err)) {
+      } catch (error) {
+         if (!axios.isCancel(error)) {
             // setError(err.response.data.message);
-        if (err.response &&(err.response.status === 401 ||err.response.data.message === "Credential Invalid or Expired Please Login Again")) {
-            setTimeout(() => {
-              clearAuthState();
-              // navigate("/");
-            }, 3000);
-          }
+            // ✅ 401 handling
+           if (error.response?.status === 401|| error.response?.status === 403) {
+        //   setErrorMessages(error.response?.data?.message||error.response?.data?.error );
+          return setTimeout(() => {
+            clearAuthState();
+            // setErrorMessages("");
+          }, 2000);
+        }
         }
       }
     };
@@ -84,14 +86,12 @@ const InsLearnerAddPayment = () => {
     } catch (error) {
       if (error.name !== "AbortError") {
         console.error("Error fetching data:", error);
-        if (
-          error.response &&
-          (error.response.status === 401 ||
-            error.response.data.message === "Credential Invalid or Expired Please Login Again")
-        ) {
+            // ✅ 401 handling
+           if (error.response?.status === 401|| error.response?.status === 403) {
+        //   setErrorMessages([error.response?.data?.message||error.response?.data?.error ]);
           return setTimeout(() => {
             clearAuthState();
-            navigate("/");
+            // setErrorMessages("");
           }, 2000);
         }
       }

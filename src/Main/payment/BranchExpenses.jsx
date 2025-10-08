@@ -97,12 +97,14 @@ const BranchExpenses = () => {
         setTotalPages(res.data.totalPages || 1);
       } catch (err) {
         if (axios.isCancel(err)) return;
-        if (
-          err.response?.status === 401 ||
-          err.response?.data?.message?.includes("Credential Invalid")
-        ) {
-          clearAuthState();
-          navigate("/");
+         // ✅ 401 handling
+           if (error.response?.status === 401|| error.response?.status === 403) {
+          setError(error.response?.data?.message||error.response?.data?.error );
+          return setTimeout(() => {
+            clearAuthState();
+            setError("");
+          }, 2000);
+        
         } else {
           setError(err.response?.data?.message || "Failed to fetch expenses");
         }

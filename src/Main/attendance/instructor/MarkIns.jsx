@@ -61,7 +61,7 @@ const MarkIns = () => {
         setInstructors(response.data.instructorsWithDecrypted);
       } catch (err) {
         if (
-          err?.response?.status === 401 ||
+          err?.response?.status === 401 || err?.response?.status === 403||
           err?.response?.data?.message === "Invalid token"
         ) {
           setTimeout(() => {
@@ -98,16 +98,25 @@ const MarkIns = () => {
         navigate(-1);
       }, 1000);
     } catch (err) {
-      if (
-        err?.response?.status === 401 ||
-        err?.response?.data?.message === "Credential Invalid or Expired Please Login Again"
-      ) {
-    setErrorMessages(["Credential Invalid or Expired Please Login Again"]);
-        return setTimeout(() => {
-          clearAuthState();
-          navigate("/");
-        }, 2000);
-      }
+           // ✅ 401 handling
+           if (err.response?.status === 401|| err.response?.status === 403) {
+          setErrorMessages(err.response?.data?.message||err.response?.data?.error );
+          return setTimeout(() => {
+            clearAuthState();
+            setErrorMessages("");
+          }, 2000);
+        }
+
+    //   if (
+    //     err?.response?.status === 401 ||
+    //     err?.response?.data?.message === "Credential Invalid or Expired Please Login Again"
+    //   ) {
+    // setErrorMessages(["Credential Invalid or Expired Please Login Again"]);
+    //     return setTimeout(() => {
+    //       clearAuthState();
+    //       navigate("/");
+    //     }, 2000);
+    //   }
 
       const errorMsg = err?.response?.data?.errors || err?.message || "An error occurred";
       const messages = Array.isArray(errorMsg) ? errorMsg : [errorMsg];

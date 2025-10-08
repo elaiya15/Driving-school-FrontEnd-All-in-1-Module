@@ -72,10 +72,14 @@ const LearnerSingleAssign = () => {
       setTotalPages(response.data.totalPages || 1);
     } catch (error) {
       if (axios.isCancel(error) || error.name === "AbortError") return;
-      if (error?.response?.status === 401) return clearAuthState();
-
-      setErrorMsg("Something went wrong while fetching data.");
-      setTimeout(() => setErrorMsg(""), 4000);
+        // ✅ 401 handling
+           if (error.response?.status === 401|| error.response?.status === 403) {
+          setErrorMsg(error.response?.data?.message||error.response?.data?.error );
+          return setTimeout(() => {
+            clearAuthState();
+            setErrorMsg("");
+          }, 2000);
+        }
     } finally {
       setLoading(false);
     }

@@ -212,7 +212,7 @@ const InsMarkAtt = () => {
   if (status === 403) {
     // Handle 403 Forbidden
     const forbiddenMsg = "You do not have permission to perform this action.";
-    setErrorMessages([forbiddenMsg]);
+    setErrorMessages([message||forbiddenMsg]);
     return setTimeout(() => setErrorMessages([]), 4000);
   }
 

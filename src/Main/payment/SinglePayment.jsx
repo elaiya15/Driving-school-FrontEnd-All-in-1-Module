@@ -61,14 +61,12 @@ const SinglePayment = () => {
         setTotalPages(response.data.totalPages || 1);
       } catch (error) {
         console.error("Error fetching data:", error);
-        if (
-          error.response &&
-          (error.response.status === 401 ||
-            error.response.data.message === "Credential Invalid or Expired Please Login Again")
-        ) {
-          setTimeout(() => {
+          // ✅ 401 handling
+           if (error.response?.status === 401|| error.response?.status === 403) {
+        //   setErrorMsg(error.response?.data?.message||error.response?.data?.error );
+          return setTimeout(() => {
             clearAuthState();
-            navigate("/");
+            // setErrorMsg("");
           }, 2000);
         }
       } finally {

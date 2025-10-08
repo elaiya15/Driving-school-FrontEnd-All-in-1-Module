@@ -87,17 +87,26 @@ useEffect(() => {
       } catch (error) {
         if (!axios.isCancel(error)) {
           console.error("Fetch error:", error);
+             // ✅ 401 handling
+           if (error.response?.status === 401|| error.response?.status === 403) {
+          setError(error.response?.data?.message||error.response?.data?.error );
+          return setTimeout(() => {
+            clearAuthState();
+            setError("");
+          }, 2000);
+        }
+
           setError(error.message);
-          if (
-            error.response &&
-            (error.response.status === 401 ||
-              error.response.data.message === "Credential Invalid or Expired Please Login Again")
-          ) {
-            setTimeout(() => {
-             clearAuthState();
-              // navigate("/");
-            }, 2000);
-          }
+        //   if (
+        //     error.response &&
+        //     (error.response.status === 401 ||
+        //       error.response.data.message === "Credential Invalid or Expired Please Login Again")
+        //   ) {
+        //     setTimeout(() => {
+        //      clearAuthState();
+        //       // navigate("/");
+        //     }, 2000);
+        //   }
         }
       } finally {
         setLoading(false);

@@ -50,14 +50,12 @@ const UpdateTest = () => {
         const response = await axios.get(`${URL}/api/v2/learner`, branchHeaders());
         setLearners(response.data.learners || []);
       } catch (error) {
-        if (
-          error?.response?.status === 401 ||
-          error?.response?.data?.message ===
-            "Credential Invalid or Expired Please Login Again"
-        ) {
+        // ✅ 401 handling
+           if (error.response?.status === 401|| error.response?.status === 403) {
+          setErrorMessages([error.response?.data?.message||error.response?.data?.error ]);
           return setTimeout(() => {
             clearAuthState();
-            navigate("/");
+            // setErrorMessages([]);
           }, 2000);
         }
         setErrorMessages([error.message || "Failed to fetch learners"]);
@@ -86,14 +84,12 @@ const UpdateTest = () => {
         setValue("testDate", init.testDate);
         setValue("result", init.result);
       } catch (error) {
-        if (
-          error?.response?.status === 401 ||
-          error?.response?.data?.message ===
-            "Credential Invalid or Expired Please Login Again"
-        ) {
+        // ✅ 401 handling
+           if (error.response?.status === 401|| error.response?.status === 403) {
+          setErrorMessages([error.response?.data?.message||error.response?.data?.error ]);
           return setTimeout(() => {
             clearAuthState();
-            navigate("/");
+            // setErrorMessages([]);
           }, 2000);
         }
         setErrorMessages([error.message || "Failed to fetch test"]);
@@ -133,16 +129,14 @@ const UpdateTest = () => {
         navigate(-1);
       }, 1000);
     } catch (error) {
-      if (
-        error?.response?.status === 401 ||
-        error?.response?.data?.message ===
-          "Credential Invalid or Expired Please Login Again"
-      ) {
-        return setTimeout(() => {
-          clearAuthState();
-          navigate("/");
-        }, 2000);
-      }
+     // ✅ 401 handling
+           if (error.response?.status === 401|| error.response?.status === 403) {
+          setErrorMessages([error.response?.data?.message||error.response?.data?.error ]);
+          return setTimeout(() => {
+            clearAuthState();
+            // setErrorMessages([]);
+          }, 2000);
+        }
       const errorMsg = error?.response?.data?.errors || error?.message || "An error occurred";
       const messages = Array.isArray(errorMsg) ? errorMsg : [errorMsg];
       setErrorMessages(messages);

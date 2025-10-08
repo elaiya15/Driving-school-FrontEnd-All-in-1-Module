@@ -66,15 +66,14 @@ const NewStaffr = () => {
         error?.response?.data?.errors ||
         error?.response?.data?.message ||
         error.message;
-      if (
-        error?.response?.status === 401 ||
-        error?.response?.data?.message ===
-          "Credential Invalid or Expired Please Login Again"
-      ) {
-        return setTimeout(() => {
-          clearAuthState();
-        }, 2000);
-      }
+        // ✅ 401 handling
+           if (error.response?.status === 401|| error.response?.status === 403) {
+        //   setErrorMsg(error.response?.data?.message||error.response?.data?.error );
+          return setTimeout(() => {
+            clearAuthState();
+            // setErrorMsg("");
+          }, 2000);
+        }
 
       const messages = Array.isArray(err) ? err : [err];
       messages.forEach((msg, i) => {

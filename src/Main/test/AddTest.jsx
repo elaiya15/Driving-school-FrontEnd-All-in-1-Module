@@ -79,17 +79,14 @@ useEffect(() => {
   }, []);
 
   const handleError = (error) => {
-    if (
-      error?.response?.status === 401 ||
-      error?.response?.data?.message ===
-        "Credential Invalid or Expired Please Login Again"
-    ) {
-      return setTimeout(() => {
-        clearAuthState();
-        navigate("/");
-      }, 2000);
-    }
-
+      // ✅ 401 handling
+           if (error.response?.status === 401|| error.response?.status === 403) {
+          setErrorMessages(error.response?.data?.message||error.response?.data?.error );
+          return setTimeout(() => {
+            clearAuthState();
+            setErrorMessages("");
+          }, 2000);
+        }
     const errorMsg =
       error?.response?.data?.errors || error?.message || "An error occurred";
     const messages = Array.isArray(errorMsg) ? errorMsg : [errorMsg];

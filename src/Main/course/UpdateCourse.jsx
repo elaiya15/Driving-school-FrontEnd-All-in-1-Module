@@ -62,18 +62,26 @@ const UpdateCourse = () => {
         const res = await axios.get(`${URL}/api/v1/courses/${id}`, branchHeaders());
         reset(res.data);
       } catch (error) {
-        if (
-          error.response &&
-          (error.response.status === 401 ||
-            error.response.data.message ===
-              "Credential Invalid or Expired Please Login Again")
-        ) {
-        setErrorMessages(["Credential Invalid or Expired Please Login Again"]);
+          // ✅ 401 handling
+           if (error.response?.status === 401|| error.response?.status === 403) {
+          setErrorMessages(error.response?.data?.message||error.response?.data?.error );
           return setTimeout(() => {
-        setErrorMessages([]);
             clearAuthState();
+            setErrorMessages("");
           }, 2000);
         }
+        // if (
+        //   error.response &&
+        //   (error.response.status === 401 ||
+        //     error.response.data.message ===
+        //       "Credential Invalid or Expired Please Login Again")
+        // ) {
+        // setErrorMessages(["Credential Invalid or Expired Please Login Again"]);
+        //   return setTimeout(() => {
+        // setErrorMessages([]);
+        //     clearAuthState();
+        //   }, 2000);
+        // }
         console.error("Error fetching course:", error);
       }
     };

@@ -106,14 +106,24 @@ const LearnerSingleAttendance = () => {
         setTotalPages(response.data.totalPages || 1);
       } catch (error) {
         console.error(error);
-        setError("Failed to fetch data");
-        if (
-          error.response &&
-          (error.response.status === 401 ||
-            error.response.data.message === "Credential Invalid or Expired Please Login Again")
-        ) {
-          clearAuthState();
+
+           // ✅ 401 handling
+           if (error.response?.status === 401|| error.response?.status === 403) {
+          setError(error.response?.data?.message||error.response?.data?.error );
+          return setTimeout(() => {
+            clearAuthState();
+            setError("");
+          }, 2000);
         }
+        setError("Failed to fetch data");
+
+        // if (
+        //   error.response &&
+        //   (error.response.status === 401 ||
+        //     error.response.data.message === "Credential Invalid or Expired Please Login Again")
+        // ) {
+        //   clearAuthState();
+        // }
       } finally {
         setLoading(false);
       }

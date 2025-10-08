@@ -70,19 +70,27 @@ const [errorMessages, setErrorMessages] = useState([]);
       navigate(-1);
     }, 500);
   } catch (error) {
-    if (
-      error.response &&
-      (error.response.status === 401 ||
-        error.response.data.message ===
-          "Credential Invalid or Expired Please Login Again")
-    ) {
-      setErrorMessages([ "Credential Invalid or Expired Please Login Again"]);
-// return console.log("return");
+     //✅ 401 handling
+           if (error.response?.status === 401|| error.response?.status === 403) {
+          setErrorMessages(error.response?.data?.message||error.response?.data?.error );
+          return setTimeout(() => {
+            clearAuthState();
+            setErrorMessages("");
+          }, 2000);
+        }
+//     if (
+//       error.response &&
+//       (error.response.status === 401 ||
+//         error.response.data.message ===
+//           "Credential Invalid or Expired Please Login Again")
+//     ) {
+//       setErrorMessages([ "Credential Invalid or Expired Please Login Again"]);
+// // return console.log("return");
 
-      return setTimeout(() => {
-        clearAuthState();
-      }, 2000);
-    }
+//       return setTimeout(() => {
+//         clearAuthState();
+//       }, 2000);
+//     }
 
     // Handle validation error with custom messages
     if (

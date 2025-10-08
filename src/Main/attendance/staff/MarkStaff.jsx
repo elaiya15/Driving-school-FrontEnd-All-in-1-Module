@@ -61,12 +61,10 @@ const MarkStaff = () => {
         setStaffList(res.data.staffList);
       } catch (err) {
         if (
-          err?.response?.status === 401 ||
-          err?.response?.data?.message === "Invalid token"
+          err?.response?.status === 401
         ) {
           setTimeout(() => {
             clearAuthState();
-            navigate("/");
           }, 2000);
         }
       }
