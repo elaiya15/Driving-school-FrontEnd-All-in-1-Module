@@ -1,7 +1,10 @@
-import { useLocation } from "react-router-dom";
+import { useLocation, Link } from "react-router-dom";
+import React from "react";
 import Lottie from "lottie-react";
 import FailureAnimation from './FailedAnimation.json'; // Replace with the path to your failure animation.json';
+import { useRole } from '../AuthContext/AuthContext';
 const PaymentSuccess = () => {
+    const { clearAuthState } = useRole();
   const query = new URLSearchParams(useLocation().search);
 //   const paymentId = query.get("payment_id")||"demo12345";
 //   const orderId = query.get("order_id")||"order_demo12345";
@@ -34,18 +37,17 @@ const PaymentSuccess = () => {
 
   {/* Retry + Dashboard Buttons */}
   <div className="flex flex-col justify-center items-center md:flex-row gap-4 mt-6 w-full max-w-md">
-    <a
-      href="/retry-payment"
-      className="inline-block w-full md:w-auto px-6 py-2 text-white bg-red-600 rounded-lg hover:bg-red-700 transition"
+
+ <Link to="/pay"className="inline-block w-full md:w-auto px-6 py-2 text-white bg-red-600 rounded-lg hover:bg-red-700 transition"
     >
-      Retry Payment
-    </a>
-    <a
-      href="/"
-      className="inline-block w-full md:w-auto px-6 py-2 text-white bg-gray-600 rounded-lg hover:bg-gray-700 transition"
+      Retry Payment</Link>
+
+
+ <button className="inline-block w-full md:w-auto px-6 py-2 text-white bg-red-600 rounded-lg hover:bg-red-700 transition" onClick={() => {clearAuthState()}}
     >
-      Go to Dashboard
-    </a>
+      Logout</button>
+    
+    
   </div>
 </div>
 

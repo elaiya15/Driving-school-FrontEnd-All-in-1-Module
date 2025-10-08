@@ -179,7 +179,7 @@ const SubscriptionPlans = () => {
             orderId: data.orderId,
             reason: "Payment cancelled by user",
           });
-          window.location.href = `/payment-failed?reason=Payment cancelled by user`;
+        //   window.location.href = `/payment-failed?reason=Payment cancelled by user`;
         },
       },
 
